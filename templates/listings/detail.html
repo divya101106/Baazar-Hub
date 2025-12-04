@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 2rem;">
+    <!-- Left Column: Images & Description -->
+    <div>
+        <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 2rem; position: relative;">
+            <div id="image-slideshow" 
+                 style="height: 500px; background-color: #f3f4f6; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;">
+                {% if listing.images.exists %}
+                    {% for img in listing.images.all %}
+                    <div class="slide" style="display: {% if forloop.first %}flex{% else %}none{% endif %}; width: 100%; height: 100%; align-items: center; justify-content: center; position: absolute; top: 0; left: 0;">
+                        <img src="{{ img.image.url }}" alt="{{ listing.title }} - Image {{ forloop.counter }}"
+                            style="width: 100%; height: 100%; object-fit: contain; background-color: #f3f4f6;">
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- Navigation Arrows (shown on hover) -->
+                    {% if listing.images.count > 1 %}
+                    <button id="prev-btn" class="slide-arrow" onclick="changeSlide(-1)" 
+                            style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: none; z-index: 10; transition: all 0.3s ease; opacity: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button id="next-btn" class="slide-arrow" onclick="changeSlide(1)" 
+                            style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.5); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; display: none; z-index: 10; transition: all 0.3s ease; opacity: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    
+                    <!-- Image Counter -->
+                    <div id="image-counter" style="position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.6); color: white; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; display: none; z-index: 10;">
+                        <span id="current-image">1</span> / <span id="total-images">{{ listing.images.count }}</span>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <span style="color: var(--text-muted); font-size: 1.2rem;">No Image Available</span>
+                {% endif %}
+            </div>
+            
+            <!-- Thumbnails (if multiple images) -->
+            {% if listing.images.count > 1 %}
+            <div id="thumbnail-container" style="display: flex; gap: 0.5rem; padding: 1rem; overflow-x: auto; background-color: #f9fafb;">
+                {% for img in listing.images.all %}
+                <div class="thumbnail" onclick="goToSlide({{ forloop.counter0 }})" 
+                     data-index="{{ forloop.counter0 }}"
+                     style="width: 80px; height: 80px; border: 2px solid {% if forloop.first %}#3b82f6{% else %}#e5e7eb{% endif %}; cursor: pointer; border-radius: 4px; overflow: hidden; flex-shrink: 0; transition: all 0.3s ease;">
+                    <img src="{{ img.image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 1rem; color: var(--text-main);">Description</h2>
+            <p style="white-space: pre-line; color: var(--text-main); line-height: 1.6;">{{ listing.description }}</p>
+
+            <div
+                style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.9rem; color: var(--text-muted);">
+                <p><strong>Condition:</strong> Used (Assumed)</p>
+                <p><strong>Location:</strong> Central City (Demo)</p>
+                <p><strong>Posted:</strong> {{ listing.created_at|date:"F j, Y" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Info & Actions -->
+    <div>
+        <div class="card" style="margin-bottom: 2rem;">
+            <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ listing.title }}</h1>
+            <p style="font-size: 1.5rem; color: var(--primary-color); font-weight: 800; margin-bottom: 1rem;">₹{{ listing.price }}</p>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+                Category: <span style="color: var(--text-main);">{% if listing.category %}{{ listing.category.name }}{% else %}Uncategorized{% endif %}</span> | Status: <span style="color: var(--secondary-color);">{{ listing.get_status_display }}</span>
+            </p>
+
+            <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem;">
+                <h3 style="font-size: 1rem; margin-bottom: 0.5rem;">Seller Information</h3>
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <div
+                        style="width: 40px; height: 40px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600;">
+                        {{ listing.seller.username|slice:":2"|upper }}
+                    </div>
+                    <div>
+                        <p style="font-weight: 600;">{{ listing.seller.username }}</p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">Joined {{ listing.seller.date_joined|date:"Y" }}</p>
+                    </div>
+                </div>
+                <a href="{% url 'user_profile_detail' listing.seller.id %}" class="btn btn-secondary" style="width: 100%; display: block; text-align: center; text-decoration: none; padding: 0.625rem; border-radius: 0.5rem;">View Seller Profile</a>
+            </div>
+        </div>
+
+        {% if user.is_authenticated and user != listing.seller %}
+        <div class="card" style="margin-bottom: 1rem;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Actions</h3>
+            
+            <!-- Buy Now Button -->
+            <a href="{% url 'buy_now' listing.id %}" class="btn btn-primary" 
+               style="width: 100%; display: block; text-align: center; text-decoration: none; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; transition: all 0.3s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                    <path d="M5 12h14"></path>
+                    <path d="M12 5l7 7-7 7"></path>
+                </svg>
+                Buy Now
+            </a>
+            
+            <!-- Add to Cart Button -->
+            {% if not in_cart %}
+            <a href="{% url 'add_to_cart' listing.id %}" class="btn btn-secondary" 
+               style="width: 100%; display: block; text-align: center; text-decoration: none; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; background: #f1f5f9; color: #475569; font-weight: 600; border: 1px solid #e2e8f0; transition: all 0.3s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                Add to Cart
+            </a>
+            {% else %}
+            <a href="{% url 'cart_view' %}" class="btn btn-secondary" 
+               style="width: 100%; display: block; text-align: center; text-decoration: none; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; background: #dbeafe; color: #1e40af; font-weight: 600; border: 1px solid #93c5fd; transition: all 0.3s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                    <path d="M9 11l3 3L22 4"></path>
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                In Cart - View Cart
+            </a>
+            {% endif %}
+            
+            <!-- Chat Button -->
+            {% if can_chat and user_offer %}
+            <a href="{% url 'chat_with_user' listing.seller.id user_offer.id %}" class="btn btn-secondary" 
+               style="width: 100%; display: block; text-align: center; text-decoration: none; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; background: #f0fdf4; color: #166534; font-weight: 600; border: 1px solid #86efac; transition: all 0.3s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                Chat with Seller
+            </a>
+            {% endif %}
+            
+            <!-- Rating Button -->
+            {% if can_rate and rating_offer %}
+            <a href="{% url 'create_rating' listing.seller.id rating_offer.id %}" class="btn btn-secondary" 
+               style="width: 100%; display: block; text-align: center; text-decoration: none; padding: 0.75rem; border-radius: 0.5rem; margin-bottom: 0.75rem; background: #fef3c7; color: #92400e; font-weight: 600; border: 1px solid #fde68a; transition: all 0.3s ease;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                </svg>
+                {% if existing_rating %}Update Rating{% else %}Rate Seller{% endif %}
+            </a>
+            {% endif %}
+        </div>
+        
+        <div class="card">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">Make an Offer</h3>
+            <form method="post" action="{% url 'create_offer' %}">
+                {% csrf_token %}
+                <input type="hidden" name="listing_id" value="{{ listing.id }}">
+                <div class="form-group">
+                    <label class="form-label">Your Price</label>
+                    <input type="number" name="amount" class="form-control" step="0.01" min="0.01" placeholder="e.g., ₹{{ listing.price }}" required>
+                </div>
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; background-color: var(--secondary-color);">Submit Offer</button>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center;">Sending
+                    an offer automatically starts a message thread.</p>
+            </form>
+        </div>
+        {% elif not user.is_authenticated %}
+        <div class="card">
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 1rem;">Please <a href="{% url 'login' %}">login</a> to interact with this listing.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const totalSlides = slides.length;
+const imageCounter = document.getElementById('image-counter');
+const currentImageSpan = document.getElementById('current-image');
+const slideshowContainer = document.getElementById('image-slideshow');
+const prevBtn = document.getElementById('prev-btn');
+const nextBtn = document.getElementById('next-btn');
+const thumbnails = document.querySelectorAll('.thumbnail');
+
+// Show arrows and counter on hover
+if (slideshowContainer) {
+    slideshowContainer.addEventListener('mouseenter', function() {
+        if (totalSlides > 1) {
+            if (prevBtn) prevBtn.style.display = 'flex';
+            if (nextBtn) nextBtn.style.display = 'flex';
+            if (imageCounter) imageCounter.style.display = 'block';
+            setTimeout(() => {
+                if (prevBtn) prevBtn.style.opacity = '1';
+                if (nextBtn) nextBtn.style.opacity = '1';
+                if (imageCounter) imageCounter.style.opacity = '1';
+            }, 10);
+        }
+    });
+    
+    slideshowContainer.addEventListener('mouseleave', function() {
+        if (prevBtn) {
+            prevBtn.style.opacity = '0';
+            setTimeout(() => prevBtn.style.display = 'none', 300);
+        }
+        if (nextBtn) {
+            nextBtn.style.opacity = '0';
+            setTimeout(() => nextBtn.style.display = 'none', 300);
+        }
+        if (imageCounter) {
+            imageCounter.style.opacity = '0';
+            setTimeout(() => imageCounter.style.display = 'none', 300);
+        }
+    });
+}
+
+function showSlide(index) {
+    if (totalSlides === 0) return;
+    
+    // Ensure index is within bounds
+    if (index >= totalSlides) {
+        currentSlide = 0;
+    } else if (index < 0) {
+        currentSlide = totalSlides - 1;
+    } else {
+        currentSlide = index;
+    }
+    
+    // Hide all slides
+    slides.forEach((slide, i) => {
+        slide.style.display = i === currentSlide ? 'flex' : 'none';
+    });
+    
+    // Update counter
+    if (currentImageSpan) {
+        currentImageSpan.textContent = currentSlide + 1;
+    }
+    
+    // Update thumbnail active state
+    thumbnails.forEach((thumb, i) => {
+        if (i === currentSlide) {
+            thumb.style.borderColor = '#3b82f6';
+            thumb.style.borderWidth = '2px';
+        } else {
+            thumb.style.borderColor = '#e5e7eb';
+            thumb.style.borderWidth = '2px';
+        }
+    });
+}
+
+function changeSlide(direction) {
+    showSlide(currentSlide + direction);
+}
+
+function goToSlide(index) {
+    showSlide(index);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', function(e) {
+    if (slideshowContainer && slideshowContainer.contains(document.activeElement) || 
+        document.activeElement === document.body) {
+        if (e.key === 'ArrowLeft') {
+            changeSlide(-1);
+        } else if (e.key === 'ArrowRight') {
+            changeSlide(1);
+        }
+    }
+});
+
+// Initialize
+if (totalSlides > 0) {
+    showSlide(0);
+}
+</script>
+
+<style>
+.slide-arrow {
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.slide-arrow:hover {
+    background: rgba(0,0,0,0.8) !important;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.thumbnail:hover {
+    border-color: #3b82f6 !important;
+    transform: scale(1.05);
+}
+
+#image-slideshow {
+    user-select: none;
+}
+
+@media (max-width: 768px) {
+    #image-slideshow {
+        height: 350px !important;
+    }
+    
+    .slide-arrow {
+        width: 40px !important;
+        height: 40px !important;
+    }
+}
+</style>
+
+{% endblock %}

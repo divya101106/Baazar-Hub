@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 250px 1fr; gap: 2rem; margin-top: 2rem;">
+    <!-- Sidebar -->
+    <div style="background: var(--dark-bg); color: white; padding: 1.5rem; border-radius: 1rem; height: fit-content;">
+        <h2 style="font-size: 1.2rem; margin-bottom: 2rem; color: var(--accent-color);">Moderator Panel</h2>
+        <ul style="list-style: none; padding: 0;">
+            <li style="margin-bottom: 1rem;">
+                <a href="#"
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: rgba(255,255,255,0.1); border-radius: 0.5rem;">
+                    <span>Moderation Queue</span>
+                    <span
+                        style="background: var(--accent-color); color: white; padding: 0.1rem 0.5rem; border-radius: 1rem; font-size: 0.8rem;">{{
+                        queue.count }}</span>
+                </a>
+            </li>
+            <li style="margin-bottom: 1rem;"><a href="#" style="color: #9ca3af;">Disputes (H)</a></li>
+            <li style="margin-bottom: 1rem;"><a href="#" style="color: #9ca3af;">User Management</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div>
+        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">Moderation Queue (Listings)</h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Review new listings and items flagged for suspicious
+            activity.</p>
+
+        {% if queue %}
+        {% for entry in queue %}
+        <div class="card"
+            style="margin-bottom: 2rem; display: grid; grid-template-columns: 200px 1fr 300px; gap: 2rem;">
+            <!-- Image -->
+            <div
+                style="background: #f3f4f6; height: 200px; display: flex; align-items: center; justify-content: center;">
+                {% if entry.listing.images.first %}
+                <img src="{{ entry.listing.images.first.image.url }}"
+                    style="max-width: 100%; max-height: 100%; object-fit: cover;">
+                {% else %}
+                <span style="color: var(--text-muted);">No Image</span>
+                {% endif %}
+            </div>
+
+            <!-- Details -->
+            <div>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <span
+                        style="background: #fee2e2; color: #ef4444; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 600;">Spam
+                        Score: {{ entry.listing.flags }}</span>
+                    <span
+                        style="background: #dbeafe; color: #2563eb; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 600;">Image
+                        Safety: Passed</span>
+                </div>
+                <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">{{ entry.listing.title }}</h3>
+                <p style="font-size: 1.2rem; color: var(--primary-color); font-weight: 700; margin-bottom: 1rem;">₹{{
+                    entry.listing.price }}</p>
+                <p style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 1rem;">{{
+                    entry.listing.description|truncatechars:150 }}</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Seller: {{ entry.listing.seller.username }}
+                    (Joined {{ entry.listing.seller.date_joined|date:"Y" }})</p>
+            </div>
+
+            <!-- Actions -->
+            <div>
+                <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">Moderation Action</h4>
+                <textarea class="form-control" rows="3" placeholder="Reason for decision..."
+                    style="margin-bottom: 1rem;"></textarea>
+
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="{% url 'moderate_action' entry.id 'approve' %}" class="btn btn-success"
+                        style="text-align: center;">Approve Listing</a>
+                    <a href="{% url 'moderate_action' entry.id 'reject' %}" class="btn btn-danger"
+                        style="text-align: center;">Reject Listing</a>
+                    <button class="btn btn-secondary" style="background: #f59e0b; color: white; border: none;">Flag for
+                        Further Review</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="card" style="text-align: center; padding: 4rem;">
+            <p style="color: var(--text-muted); font-size: 1.2rem;">No pending items in the queue.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+from rest_framework import serializers
+from .models import SavedSearch
+
+class SavedSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavedSearch
+        fields = ['id', 'user', 'query', 'filters', 'created_at']
+        read_only_fields = ['user', 'created_at']
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)

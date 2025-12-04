@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 2rem auto;">
+    <h1 style="font-size: 2rem; margin-bottom: 2rem;">Shopping Cart</h1>
+    
+    {% if cart_items %}
+    <div class="card" style="margin-bottom: 2rem;">
+        {% for item in cart_items %}
+        <div style="display: flex; gap: 1.5rem; padding: 1.5rem; border-bottom: 1px solid var(--border-color); {% if not forloop.last %}margin-bottom: 0{% endif %}">
+            <div style="width: 120px; height: 120px; flex-shrink: 0; border-radius: 8px; overflow: hidden; background: #f3f4f6;">
+                {% if item.listing.images.exists %}
+                <img src="{{ item.listing.images.first.image.url }}" 
+                     style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                    No Image
+                </div>
+                {% endif %}
+            </div>
+            
+            <div style="flex: 1; min-width: 0;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">
+                    <a href="{% url 'listing_detail' item.listing.id %}" style="color: var(--text-main); text-decoration: none;">
+                        {{ item.listing.title }}
+                    </a>
+                </h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">
+                    Seller: <a href="{% url 'user_profile_detail' item.listing.seller.id %}" style="color: var(--primary-color);">{{ item.listing.seller.username }}</a>
+                </p>
+                <p style="font-size: 1.25rem; color: var(--primary-color); font-weight: 700; margin-bottom: 1rem;">
+                    ₹{{ item.listing.price }}
+                </p>
+                
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <a href="{% url 'buy_now' item.listing.id %}" class="btn btn-primary" 
+                       style="padding: 0.5rem 1rem; text-decoration: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 6px; font-weight: 600;">
+                        Buy Now
+                    </a>
+                    <a href="{% url 'remove_from_cart' item.id %}" 
+                       style="color: #dc2626; text-decoration: none; font-size: 0.9rem; padding: 0.5rem;">
+                        Remove
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="card" style="background: #f9fafb;">
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem;">
+            <div>
+                <p style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">
+                    Total: <span style="color: var(--primary-color);">₹{{ total }}</span>
+                </p>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+                    {{ cart_items|length }} item{{ cart_items|length|pluralize }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 3rem;">
+        <p style="font-size: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">Your cart is empty</p>
+        <a href="{% url 'home' %}" class="btn btn-primary" 
+           style="display: inline-block; padding: 0.75rem 1.5rem; text-decoration: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; font-weight: 600;">
+            Continue Shopping
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

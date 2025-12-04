@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 2rem auto;">
+    <div class="card" style="margin-bottom: 1rem;">
+        <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Chat with {{ other_user.username }}</h1>
+        {% if offer %}
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+            Regarding: <a href="{% url 'listing_detail' offer.listing.id %}" style="color: var(--primary-color);">{{ offer.listing.title }}</a>
+            | Offer: ₹{{ offer.amount }} | Status: {{ offer.get_status_display }}
+        </p>
+        {% endif %}
+    </div>
+
+    <div class="card" style="height: 500px; overflow-y: auto; margin-bottom: 1rem; background: #f9fafb;">
+        <div id="messages-container" style="padding: 1rem;">
+            {% for message in chat_messages %}
+            <div style="margin-bottom: 1rem; display: flex; {% if message.sender == user %}justify-content: flex-end{% else %}justify-content: flex-start{% endif %};">
+                <div style="max-width: 70%; padding: 0.75rem 1rem; border-radius: 12px; {% if message.sender == user %}background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;{% else %}background: white; color: var(--text-main); border: 1px solid var(--border-color);{% endif %}">
+                    <div style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 0.25rem;">
+                        {{ message.sender.username }} • {{ message.timestamp|date:"M j, g:i A" }}
+                    </div>
+                    <div style="white-space: pre-wrap;">{{ message.content }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <p style="text-align: center; color: var(--text-muted); padding: 2rem;">No messages yet. Start the conversation!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <form method="post" id="message-form">
+            {% csrf_token %}
+            <div style="display: flex; gap: 0.5rem;">
+                <textarea name="content" id="message-content" 
+                    style="flex: 1; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; resize: none; min-height: 60px; font-family: inherit;"
+                    placeholder="Type your message..." required></textarea>
+                <button type="submit" class="btn btn-primary" 
+                    style="padding: 0.75rem 1.5rem; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; cursor: pointer; font-weight: 600;">
+                    Send
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Auto-scroll to bottom on load
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('messages-container');
+    if (container) {
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    // Focus on textarea
+    const textarea = document.getElementById('message-content');
+    if (textarea) {
+        textarea.focus();
+    }
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 450px; margin: 4rem auto; background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+    <h2 style="text-align: center; margin-bottom: 0.5rem; color: #1e3a8a; font-size: 2rem; font-weight: 800;">Join BAAZAR-HUB</h2>
+    <p style="text-align: center; color: #64748b; margin-bottom: 2rem; font-size: 0.95rem;">Create your account today</p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Username Field -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="{{ form.username.id_for_label }}" style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600; font-size: 0.9rem;">
+                Username
+            </label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                {% for error in form.username.errors %}
+                <div style="color: #ef4444; font-size: 0.8rem; margin-top: 0.5rem;">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="{{ form.email.id_for_label }}" style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600; font-size: 0.9rem;">
+                Email Address <span style="color: #ef4444;">*</span>
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                <div style="color: #ef4444; font-size: 0.8rem; margin-top: 0.5rem;">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Phone Number Field -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="{{ form.phone_number.id_for_label }}" style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600; font-size: 0.9rem;">
+                Phone Number <span style="color: #ef4444;">*</span>
+            </label>
+            {{ form.phone_number }}
+            {% if form.phone_number.errors %}
+                {% for error in form.phone_number.errors %}
+                <div style="color: #ef4444; font-size: 0.8rem; margin-top: 0.5rem;">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="{{ form.password1.id_for_label }}" style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600; font-size: 0.9rem;">
+                Password
+            </label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                {% for error in form.password1.errors %}
+                <div style="color: #ef4444; font-size: 0.8rem; margin-top: 0.5rem;">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Password Confirmation Field -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <label for="{{ form.password2.id_for_label }}" style="display: block; margin-bottom: 0.5rem; color: #374151; font-weight: 600; font-size: 0.9rem;">
+                Password Confirmation
+            </label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                {% for error in form.password2.errors %}
+                <div style="color: #ef4444; font-size: 0.8rem; margin-top: 0.5rem;">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Non-field errors -->
+        {% if form.non_field_errors %}
+            <div style="color: #ef4444; font-size: 0.9rem; margin-bottom: 1rem; padding: 0.75rem; background-color: #fee2e2; border-radius: 0.5rem;">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; padding: 0.875rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 0.5rem; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s;">
+            Register
+        </button>
+    </form>
+
+    <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #64748b;">
+        Already have an account? <a href="{% url 'login' %}" style="color: #667eea; font-weight: 600; text-decoration: none;">Sign In</a>
+    </p>
+</div>
+
+<style>
+    .form-group input:focus {
+        outline: none;
+        border-color: #667eea !important;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="hero scroll-fade-in"
+    style="text-align: center; padding: 4rem 0; background: linear-gradient(to right, #4f46e5, #3b82f6); color: white; border-radius: 1rem; margin-bottom: 3rem;">
+    <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 1rem;">Find What You Need, Locally.</h1>
+    <p style="font-size: 1.25rem; margin-bottom: 2rem; opacity: 0.9;">Verified listings, safe transactions.</p>
+
+    <form action="/" method="GET" id="search-form"
+        style="max-width: 600px; margin: 0 auto; display: flex; gap: 0.5rem; background: white; padding: 0.5rem; border-radius: 0.5rem;">
+        <input type="text" name="q" placeholder="Search for electronics, furniture, or services..." value="{{ search_query|default:'' }}"
+            style="flex: 1; border: none; padding: 0.75rem; font-size: 1rem; outline: none;">
+        <select name="category"
+            style="border: none; padding: 0 1rem; border-left: 1px solid #e5e7eb; outline: none; color: #4b5563;">
+            <option value="">All Categories</option>
+            {% for category in categories %}
+            <option value="{{ category.id }}" {% if selected_category|default:"" == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary" style="background-color: #f59e0b; color: white;">Search</button>
+    </form>
+    <div style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+        <a href="#" style="text-decoration: underline;">Advanced Search & Filters</a>
+    </div>
+</section>
+
+<section class="recent-listings scroll-fade-in">
+    {% if is_search %}
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+            Search Results
+            {% if search_query %}
+                <span style="font-weight: 400; color: #64748b; font-size: 1rem;">for "{{ search_query }}"</span>
+            {% endif %}
+        </h2>
+    {% else %}
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">Recommended for you</h2>
+    {% endif %}
+
+    <div class="listings-grid"
+        style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 2rem;">
+        {% for listing in listings %}
+        <div class="card listing-card scroll-fade-in" style="padding: 0; overflow: hidden; transition: transform 0.2s; position: relative; cursor: default;">
+            <div class="listing-image" style="height: 200px; background-color: #e5e7eb; position: relative;">
+                {% if listing.images.exists %}
+                    {% with listing.images.first as first_image %}
+                    <img src="{{ first_image.image.url }}" alt="{{ listing.title }}"
+                        style="width: 100%; height: 100%; object-fit: cover;">
+                    {% endwith %}
+                {% else %}
+                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #9ca3af;">
+                    No Image</div>
+                {% endif %}
+                <span class="badge"
+                    style="position: absolute; top: 0.5rem; right: 0.5rem; background: #3b82f6; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.8rem; font-weight: 600; z-index: 2;">₹{{ listing.price }}</span>
+            </div>
+            <div class="listing-details" style="padding: 1rem;">
+                <h3
+                    style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <a href="{% url 'listing_detail' listing.pk %}" style="color: #1e293b; text-decoration: none; cursor: pointer;">{{ listing.title }}</a>
+                </h3>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                    {% if listing.category %}{{ listing.category.name }}{% else %}Uncategorized{% endif %} | {{ listing.created_at|timesince }} ago
+                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="color: var(--secondary-color); font-weight: 600; font-size: 0.9rem;">{{ listing.get_status_display }}</span>
+                    <a href="{% url 'listing_detail' listing.pk %}" 
+                       style="padding: 0.5rem 1rem; background-color: #3b82f6; color: white; border-radius: 0.5rem; text-decoration: none; font-size: 0.875rem; font-weight: 500; transition: background-color 0.2s; cursor: pointer;">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div style="text-align: center; padding: 3rem 2rem; background-color: #f8fafc; border-radius: 0.75rem; border: 2px dashed #e5e7eb; grid-column: 1 / -1;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" style="margin: 0 auto 1rem;">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <p style="font-size: 1.125rem; font-weight: 600; color: #475569; margin-bottom: 0.5rem;">No listings found</p>
+            <p style="color: #64748b; font-size: 0.9rem;">
+                {% if is_search %}
+                    Try adjusting your search terms or category filter.
+                {% else %}
+                    No listings available at the moment.
+                {% endif %}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem;" class="scroll-fade-in">
+        <button class="btn btn-secondary" style="border-radius: 2rem; padding: 0.75rem 2rem;">Load More
+            Listings</button>
+    </div>
+</section>
+
+<style>
+    /* Scroll Animation Styles */
+    .scroll-fade-in {
+        opacity: 0;
+        transform: translateY(-30px);
+        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    
+    .scroll-fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    /* Stagger animation for listing cards */
+    .listing-card {
+        transition-delay: 0s;
+    }
+    
+    .listing-card:nth-child(1) { transition-delay: 0.1s; }
+    .listing-card:nth-child(2) { transition-delay: 0.2s; }
+    .listing-card:nth-child(3) { transition-delay: 0.3s; }
+    .listing-card:nth-child(4) { transition-delay: 0.4s; }
+    .listing-card:nth-child(5) { transition-delay: 0.5s; }
+    .listing-card:nth-child(6) { transition-delay: 0.6s; }
+    .listing-card:nth-child(7) { transition-delay: 0.7s; }
+    .listing-card:nth-child(8) { transition-delay: 0.8s; }
+    
+    /* Hover effect for listing cards */
+    .listing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    /* Link hover effects */
+    .listing-card a:hover {
+        text-decoration: underline;
+    }
+    
+    .listing-card a[style*="View Details"]:hover {
+        background-color: #2563eb !important;
+    }
+</style>
+
+<script>
+    // Scroll animation observer - only triggers once on initial page load, not on form submissions
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if this is a form submission (search) or initial page load
+        const isFormSubmission = sessionStorage.getItem('animationsShown') === 'true' || 
+                                 document.referrer.includes(window.location.hostname);
+        
+        // If animations were already shown in this session, show elements immediately
+        if (isFormSubmission && sessionStorage.getItem('animationsShown') === 'true') {
+            document.querySelectorAll('.scroll-fade-in').forEach(el => {
+                el.classList.add('visible');
+            });
+            return; // Exit early, no animations
+        }
+        
+        // Mark that animations have been shown
+        sessionStorage.setItem('animationsShown', 'true');
+        
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        // Track which elements have already been animated
+        const animatedElements = new Set();
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                // Only animate if element is intersecting and hasn't been animated before
+                if (entry.isIntersecting && !animatedElements.has(entry.target)) {
+                    entry.target.classList.add('visible');
+                    animatedElements.add(entry.target);
+                    // Unobserve after animation to prevent re-animation
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // Observe all elements with scroll-fade-in class
+        document.querySelectorAll('.scroll-fade-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Show hero section immediately on page load
+        const hero = document.querySelector('.hero');
+        if (hero) {
+            setTimeout(() => {
+                hero.classList.add('visible');
+                animatedElements.add(hero);
+                observer.unobserve(hero);
+            }, 100);
+        }
+    });
+    
+    // Mark form submission to prevent animations on search
+    const searchForm = document.getElementById('search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function() {
+            // Keep the flag so animations don't trigger on search results
+            sessionStorage.setItem('animationsShown', 'true');
+        });
+    }
+</script>
+{% endblock %}

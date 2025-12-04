@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto;">
+    <div class="card">
+        <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Rate {{ rated_user.username }}</h1>
+        {% if offer %}
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+            Transaction: <a href="{% url 'listing_detail' offer.listing.id %}" style="color: var(--primary-color);">{{ offer.listing.title }}</a>
+        </p>
+        {% endif %}
+        
+        {% if existing_rating %}
+        <p style="color: #f59e0b; margin-bottom: 1rem; padding: 0.75rem; background: #fef3c7; border-radius: 6px;">
+            You have already rated this user. You can update your rating below.
+        </p>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-main);">
+                    Rating (1-5 stars)
+                </label>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    {% for i in "12345" %}
+                    <label style="cursor: pointer; font-size: 2rem; color: #d1d5db; transition: color 0.2s;">
+                        <input type="radio" name="score" value="{{ i }}" 
+                               {% if existing_rating and existing_rating.score == forloop.counter %}checked{% endif %}
+                               required style="display: none;">
+                        <span class="star" data-value="{{ i }}">★</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <div style="margin-bottom: 1.5rem;">
+                <label for="comment" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: var(--text-main);">
+                    Comment (Optional)
+                </label>
+                <textarea name="comment" id="comment" 
+                    style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; resize: vertical; min-height: 100px; font-family: inherit;"
+                    placeholder="Share your experience...">{% if existing_rating %}{{ existing_rating.comment }}{% endif %}</textarea>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-primary" 
+                    style="flex: 1; padding: 0.75rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    {% if existing_rating %}Update Rating{% else %}Submit Rating{% endif %}
+                </button>
+                <a href="{% url 'user_profile_detail' rated_user.id %}" class="btn btn-secondary" 
+                   style="padding: 0.75rem 1.5rem; text-decoration: none; background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 600;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Star rating interaction
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star');
+    const radioInputs = document.querySelectorAll('input[name="score"]');
+    
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseenter', function() {
+            const value = parseInt(this.dataset.value);
+            highlightStars(value);
+        });
+        
+        star.addEventListener('click', function() {
+            const value = parseInt(this.dataset.value);
+            radioInputs[value - 1].checked = true;
+            highlightStars(value);
+        });
+    });
+    
+    // Highlight stars based on checked input
+    radioInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            highlightStars(parseInt(this.value));
+        });
+    });
+    
+    // Initialize with checked value
+    const checkedInput = document.querySelector('input[name="score"]:checked');
+    if (checkedInput) {
+        highlightStars(parseInt(checkedInput.value));
+    }
+    
+    function highlightStars(value) {
+        stars.forEach((star, index) => {
+            if (index < value) {
+                star.style.color = '#fbbf24'; // Gold color
+            } else {
+                star.style.color = '#d1d5db'; // Gray color
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
+

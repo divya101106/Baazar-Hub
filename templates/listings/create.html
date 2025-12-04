@@ -1,0 +1,511 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div
+    style="max-width: 800px; margin: 3rem auto; background: white; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);">
+
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h2 style="color: #1e3a8a; font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem;">Create a New Listing</h2>
+        <p style="color: #64748b;">List your item for sale in three easy steps.</p>
+    </div>
+
+    <!-- Progress Steps -->
+    <div
+        style="display: flex; justify-content: space-between; margin-bottom: 3rem; position: relative; max-width: 600px; margin-left: auto; margin-right: auto;">
+        <!-- Connecting Line -->
+        <div
+            style="position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: #e2e8f0; z-index: 0; transform: translateY(-50%);">
+        </div>
+        <div class="progress-line-fill"
+            style="position: absolute; top: 50%; left: 0; width: 0%; height: 2px; background: #3b82f6; z-index: 0; transform: translateY(-50%); transition: width 0.3s ease;">
+        </div>
+
+        <!-- Step 1 Indicator -->
+        <div class="step-indicator active" data-step="1"
+            style="position: relative; z-index: 1; background: white; padding: 0 0.5rem;">
+            <div class="step-circle"
+                style="width: 2.5rem; height: 2.5rem; background: #3b82f6; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto 0.5rem; border: 2px solid #3b82f6;">
+                1</div>
+            <span
+                style="font-size: 0.875rem; font-weight: 600; color: #1e3a8a; display: block; text-align: center;">Details</span>
+        </div>
+
+        <!-- Step 2 Indicator -->
+        <div class="step-indicator" data-step="2"
+            style="position: relative; z-index: 1; background: white; padding: 0 0.5rem;">
+            <div class="step-circle"
+                style="width: 2.5rem; height: 2.5rem; background: white; color: #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto 0.5rem; border: 2px solid #e2e8f0;">
+                2</div>
+            <span
+                style="font-size: 0.875rem; font-weight: 500; color: #94a3b8; display: block; text-align: center;">Images</span>
+        </div>
+
+        <!-- Step 3 Indicator -->
+        <div class="step-indicator" data-step="3"
+            style="position: relative; z-index: 1; background: white; padding: 0 0.5rem;">
+            <div class="step-circle"
+                style="width: 2.5rem; height: 2.5rem; background: white; color: #94a3b8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; margin: 0 auto 0.5rem; border: 2px solid #e2e8f0;">
+                3</div>
+            <span
+                style="font-size: 0.875rem; font-weight: 500; color: #94a3b8; display: block; text-align: center;">Review</span>
+        </div>
+    </div>
+
+    <!-- Display form errors at top -->
+    {% if form.errors %}
+    <div style="background-color: #fee2e2; border: 1px solid #fca5a5; border-radius: 0.5rem; padding: 1rem; margin-bottom: 2rem;">
+        <p style="color: #dc2626; font-weight: 600; margin-bottom: 0.5rem;">Please correct the errors below:</p>
+        <ul style="color: #dc2626; margin: 0; padding-left: 1.5rem;">
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                <li>{{ field|title }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="listingForm">
+        {% csrf_token %}
+
+        <!-- Step 1: Basic Information -->
+        <div class="form-step" id="step1">
+            <h3
+                style="color: #1e3a8a; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">
+                Step 1: Basic Information</h3>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="{{ form.title.id_for_label }}"
+                    style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 500;">Listing
+                    Title <span style="color: #ef4444;">*</span></label>
+                {{ form.title }}
+                <div id="titleError" style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem; display: none;"></div>
+                {% if form.title.errors %}
+                    {% for error in form.title.errors %}
+                    <div style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem;">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="{{ form.category.id_for_label }}"
+                    style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 500;">Category <span style="color: #ef4444;">*</span></label>
+                {{ form.category }}
+                <div id="categoryError" style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem; display: none;"></div>
+                {% if form.category.errors %}
+                    {% for error in form.category.errors %}
+                    <div style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem;">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="{{ form.price.id_for_label }}"
+                    style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 500;">Price (₹) <span style="color: #ef4444;">*</span></label>
+                {{ form.price }}
+                <div id="priceError" style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem; display: none;"></div>
+                {% if form.price.errors %}
+                    {% for error in form.price.errors %}
+                    <div style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem;">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="{{ form.description.id_for_label }}"
+                    style="display: block; margin-bottom: 0.5rem; color: #475569; font-weight: 500;">Description <span style="color: #ef4444;">*</span></label>
+                {{ form.description }}
+                <div id="descriptionError" style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem; display: none;"></div>
+                {% if form.description.errors %}
+                    {% for error in form.description.errors %}
+                    <div style="font-size: 0.8rem; color: #ef4444; margin-top: 0.25rem;">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div style="text-align: right; margin-top: 2rem;">
+                <button type="button" class="btn-next" onclick="nextStep(2)"
+                    style="background-color: #3b82f6; color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background 0.2s;">Next:
+                    Add Images</button>
+            </div>
+        </div>
+
+        <!-- Step 2: Images -->
+        <div class="form-step" id="step2" style="display: none;">
+            <h3
+                style="color: #1e3a8a; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">
+                Step 2: Upload Images</h3>
+
+            <div
+                style="border: 2px dashed #cbd5e1; border-radius: 0.75rem; padding: 3rem; text-align: center; background: #f8fafc; margin-bottom: 1.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                    stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    style="margin-bottom: 1rem;">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <p style="color: #64748b; margin-bottom: 1rem;">Drag and drop your images here, or click to browse.</p>
+                <input type="file" name="images" id="id_images" class="form-control" multiple accept="image/jpeg,image/png,image/jpg"
+                    style="display: none;" onchange="updateImagePreview(this)" max="5">
+                <button type="button" onclick="document.getElementById('id_images').click()"
+                    style="background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.5rem 1rem; border-radius: 0.375rem; font-weight: 500; cursor: pointer;">Choose
+                    Files</button>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.5rem;">Max 5 images. JPG, PNG supported.</p>
+            </div>
+
+            <div id="imagePreviewContainer" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <button type="button" class="btn-back" onclick="prevStep(1)"
+                    style="background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">Back</button>
+                <button type="button" class="btn-next" onclick="nextStep(3)"
+                    style="background-color: #3b82f6; color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: background 0.2s;">Next:
+                    Review</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Review -->
+        <div class="form-step" id="step3" style="display: none;">
+            <h3
+                style="color: #1e3a8a; font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">
+                Step 3: Review & Submit</h3>
+
+            <div style="background: #f8fafc; border-radius: 0.75rem; padding: 1.5rem; margin-bottom: 2rem;">
+                <div style="margin-bottom: 1rem;">
+                    <span
+                        style="display: block; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Title</span>
+                    <p id="reviewTitle" style="font-size: 1.1rem; color: #1e293b; font-weight: 600;">-</p>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <span
+                            style="display: block; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Category</span>
+                        <p id="reviewCategory" style="color: #1e293b;">-</p>
+                    </div>
+                    <div>
+                        <span
+                            style="display: block; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Price</span>
+                        <p id="reviewPrice" style="color: #1e293b; font-weight: 600; color: #3b82f6;">-</p>
+                    </div>
+                </div>
+                <div>
+                    <span
+                        style="display: block; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Description</span>
+                    <p id="reviewDescription" style="color: #475569; line-height: 1.6;">-</p>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <span
+                        style="display: block; font-size: 0.8rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Images
+                        Selected</span>
+                    <p id="reviewImagesCount" style="color: #1e293b;">0 images</p>
+                </div>
+            </div>
+
+            <div
+                style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 2rem; border-radius: 0.25rem;">
+                <p style="font-size: 0.9rem; color: #1e40af; margin: 0;"><strong>Note:</strong> Your listing will be
+                    reviewed by our moderation team before it becomes visible to other users.</p>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+                <button type="button" class="btn-back" onclick="prevStep(2)"
+                    style="background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer;">Back</button>
+                <button type="submit"
+                    style="background-color: #16a34a; color: white; border: none; padding: 0.75rem 2rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px -1px rgba(22, 163, 74, 0.2);">Submit
+                    Listing</button>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    // Real-time validation
+    document.addEventListener('DOMContentLoaded', function() {
+        const titleInput = document.querySelector('[name="title"]');
+        const categoryInput = document.querySelector('[name="category"]');
+        const priceInput = document.querySelector('[name="price"]');
+        const descriptionInput = document.querySelector('[name="description"]');
+        
+        // Title validation
+        if (titleInput) {
+            titleInput.addEventListener('input', function() {
+                validateTitle();
+            });
+            titleInput.addEventListener('blur', function() {
+                validateTitle();
+            });
+        }
+        
+        // Category validation
+        if (categoryInput) {
+            categoryInput.addEventListener('change', function() {
+                validateCategory();
+            });
+        }
+        
+        // Price validation
+        if (priceInput) {
+            priceInput.addEventListener('input', function() {
+                validatePrice();
+            });
+            priceInput.addEventListener('blur', function() {
+                validatePrice();
+            });
+        }
+        
+        // Description validation
+        if (descriptionInput) {
+            descriptionInput.addEventListener('input', function() {
+                validateDescription();
+            });
+            descriptionInput.addEventListener('blur', function() {
+                validateDescription();
+            });
+        }
+    });
+    
+    function validateTitle() {
+        const titleInput = document.querySelector('[name="title"]');
+        const errorDiv = document.getElementById('titleError');
+        const title = titleInput.value.trim();
+        
+        if (!title) {
+            showError(errorDiv, 'Title is required');
+            titleInput.style.borderColor = '#ef4444';
+            return false;
+        } else if (title.length < 10) {
+            showError(errorDiv, `Title must be at least 10 characters (${title.length}/10)`);
+            titleInput.style.borderColor = '#ef4444';
+            return false;
+        } else {
+            hideError(errorDiv);
+            titleInput.style.borderColor = '#10b981';
+            return true;
+        }
+    }
+    
+    function validateCategory() {
+        const categoryInput = document.querySelector('[name="category"]');
+        const errorDiv = document.getElementById('categoryError');
+        const category = categoryInput.value;
+        
+        if (!category) {
+            showError(errorDiv, 'Please select a category');
+            categoryInput.style.borderColor = '#ef4444';
+            return false;
+        } else {
+            hideError(errorDiv);
+            categoryInput.style.borderColor = '#10b981';
+            return true;
+        }
+    }
+    
+    function validatePrice() {
+        const priceInput = document.querySelector('[name="price"]');
+        const errorDiv = document.getElementById('priceError');
+        const price = parseFloat(priceInput.value);
+        
+        if (!priceInput.value || isNaN(price)) {
+            showError(errorDiv, 'Price is required');
+            priceInput.style.borderColor = '#ef4444';
+            return false;
+        } else if (price <= 0) {
+            showError(errorDiv, 'Price must be greater than zero');
+            priceInput.style.borderColor = '#ef4444';
+            return false;
+        } else {
+            hideError(errorDiv);
+            priceInput.style.borderColor = '#10b981';
+            return true;
+        }
+    }
+    
+    function validateDescription() {
+        const descriptionInput = document.querySelector('[name="description"]');
+        const errorDiv = document.getElementById('descriptionError');
+        const description = descriptionInput.value.trim();
+        
+        if (!description) {
+            showError(errorDiv, 'Description is required');
+            descriptionInput.style.borderColor = '#ef4444';
+            return false;
+        } else if (description.length < 50) {
+            showError(errorDiv, `Description must be at least 50 characters (${description.length}/50)`);
+            descriptionInput.style.borderColor = '#ef4444';
+            return false;
+        } else {
+            hideError(errorDiv);
+            descriptionInput.style.borderColor = '#10b981';
+            return true;
+        }
+    }
+    
+    function showError(errorDiv, message) {
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    }
+    
+    function hideError(errorDiv) {
+        if (errorDiv) {
+            errorDiv.style.display = 'none';
+        }
+    }
+    
+    function nextStep(step) {
+        // Validate Step 1 before proceeding
+        if (step === 2) {
+            const titleValid = validateTitle();
+            const categoryValid = validateCategory();
+            const priceValid = validatePrice();
+            const descriptionValid = validateDescription();
+            
+            if (!titleValid || !categoryValid || !priceValid || !descriptionValid) {
+                // Scroll to first error
+                const firstError = document.querySelector('[style*="border-color: #ef4444"]');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+                return;
+            }
+        }
+
+        // Update Review Data if going to Step 3
+        if (step === 3) {
+            document.getElementById('reviewTitle').textContent = document.querySelector('[name="title"]').value || '-';
+
+            const categorySelect = document.querySelector('[name="category"]');
+            document.getElementById('reviewCategory').textContent = categorySelect.options[categorySelect.selectedIndex].text || '-';
+
+            document.getElementById('reviewPrice').textContent = '₹' + (document.querySelector('[name="price"]').value || '0.00');
+            document.getElementById('reviewDescription').textContent = document.querySelector('[name="description"]').value || '-';
+
+            const fileInput = document.getElementById('id_images');
+            document.getElementById('reviewImagesCount').textContent = fileInput.files.length + ' images selected';
+        }
+
+        showStep(step);
+    }
+
+    function prevStep(step) {
+        showStep(step);
+    }
+
+    function showStep(step) {
+        // Hide all steps
+        document.querySelectorAll('.form-step').forEach(el => el.style.display = 'none');
+        // Show target step
+        document.getElementById('step' + step).style.display = 'block';
+
+        // Update indicators
+        document.querySelectorAll('.step-indicator').forEach(el => {
+            const circle = el.querySelector('.step-circle');
+            const label = el.querySelector('span');
+            const stepNum = parseInt(el.dataset.step);
+
+            if (stepNum === step) {
+                // Active
+                circle.style.background = '#3b82f6';
+                circle.style.color = 'white';
+                circle.style.borderColor = '#3b82f6';
+                label.style.color = '#1e3a8a';
+            } else if (stepNum < step) {
+                // Completed
+                circle.style.background = '#3b82f6';
+                circle.style.color = 'white';
+                circle.style.borderColor = '#3b82f6';
+                circle.innerHTML = '✓';
+                label.style.color = '#3b82f6';
+            } else {
+                // Inactive
+                circle.style.background = 'white';
+                circle.style.color = '#94a3b8';
+                circle.style.borderColor = '#e2e8f0';
+                circle.innerHTML = stepNum;
+                label.style.color = '#94a3b8';
+            }
+        });
+
+        // Update progress line
+        const progressFill = document.querySelector('.progress-line-fill');
+        if (step === 1) progressFill.style.width = '0%';
+        if (step === 2) progressFill.style.width = '50%';
+        if (step === 3) progressFill.style.width = '100%';
+    }
+
+    function updateImagePreview(input) {
+        const container = document.getElementById('imagePreviewContainer');
+        container.innerHTML = '';
+        
+        // Validate image count
+        if (input.files && input.files.length > 5) {
+            alert('Maximum 5 images allowed. Please select 5 or fewer images.');
+            input.value = ''; // Clear the input
+            return;
+        }
+
+        if (input.files) {
+            Array.from(input.files).forEach((file, index) => {
+                // Validate file type
+                if (!file.type.match('image/(jpeg|jpg|png)')) {
+                    alert(`File ${file.name} is not a valid image type. Only JPEG and PNG are allowed.`);
+                    return;
+                }
+                
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert(`File ${file.name} is too large. Maximum size is 5MB.`);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const div = document.createElement('div');
+                    div.style.width = '80px';
+                    div.style.height = '80px';
+                    div.style.borderRadius = '0.5rem';
+                    div.style.overflow = 'hidden';
+                    div.style.border = '1px solid #e2e8f0';
+                    div.style.position = 'relative';
+
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+
+                    div.appendChild(img);
+                    container.appendChild(div);
+                }
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+    
+    // Add CSS for input focus states
+    const style = document.createElement('style');
+    style.textContent = `
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        input[style*="border-color: #10b981"], 
+        select[style*="border-color: #10b981"], 
+        textarea[style*="border-color: #10b981"] {
+            border-color: #10b981 !important;
+        }
+        input[style*="border-color: #ef4444"], 
+        select[style*="border-color: #ef4444"], 
+        textarea[style*="border-color: #ef4444"] {
+            border-color: #ef4444 !important;
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}
