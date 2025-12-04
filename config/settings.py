@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-yk&pm*cfwk6*ebxatsxx^8s)a4n2+!uu_fq9_1r5*yrqu_o#@3
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*",          # allow all HTTPS (Django 4.1+ supports wildcard)
+    "http://*",           # optional for local testing
+    "https://baazar-hub.onrender.com/"
+]
 
 
 # Application definition
