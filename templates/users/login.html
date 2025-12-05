@@ -8,15 +8,45 @@
 
     <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">Sign In</h3>
 
+    {% if error_message %}
+    <div style="background-color: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span style="font-size: 0.9rem; font-weight: 500;">{{ error_message }}</span>
+    </div>
+    {% endif %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="background-color: {% if message.tags == 'error' %}#fee2e2{% else %}#d1fae5{% endif %}; border: 1px solid {% if message.tags == 'error' %}#fca5a5{% else %}#86efac{% endif %}; color: {% if message.tags == 'error' %}#991b1b{% else %}#065f46{% endif %}; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                <span style="font-size: 0.9rem;">{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
         <div class="form-group">
             <label for="id_username" class="form-label">Username</label>
-            <input type="text" name="username" class="form-control" id="id_username" required>
+            <input type="text" name="username" class="form-control" id="id_username" 
+                   value="{% if username %}{{ username }}{% endif %}" 
+                   required
+                   style="{% if error_type == 'username' %}border-color: #ef4444; background-color: #fef2f2;{% endif %}">
+            {% if error_type == 'username' %}
+            <small style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem; display: block;">Please check your username.</small>
+            {% endif %}
         </div>
         <div class="form-group">
             <label for="id_password" class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" id="id_password" required>
+            <input type="password" name="password" class="form-control" id="id_password" 
+                   required
+                   style="{% if error_type == 'password' %}border-color: #ef4444; background-color: #fef2f2;{% endif %}">
+            {% if error_type == 'password' %}
+            <small style="color: #ef4444; font-size: 0.8rem; margin-top: 0.25rem; display: block;">Please check your password.</small>
+            {% endif %}
         </div>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">

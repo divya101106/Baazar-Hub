@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 2rem auto; padding: 2rem;">
+    <div class="card" style="padding: 2rem; border-radius: 1rem; box-shadow: var(--shadow-lg);">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <a href="{% url 'my_disputes' %}" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color); margin: 0;">Dispute Details</h2>
+        </div>
+
+        <div style="margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem; padding: 1rem; background-color: #f8fafc; border-radius: 0.5rem;">
+                <div>
+                    <p style="font-weight: 600; color: #1e293b; margin: 0 0 0.5rem 0;">Status</p>
+                    <span style="padding: 0.5rem 1rem; border-radius: 0.5rem; font-weight: 600; font-size: 0.875rem;
+                        {% if dispute.status == 'open' %}background-color: #fef3c7; color: #92400e;
+                        {% elif dispute.status == 'resolved' %}background-color: #d1fae5; color: #065f46;
+                        {% else %}background-color: #e5e7eb; color: #374151;{% endif %}">
+                        {{ dispute.get_status_display }}
+                    </span>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-weight: 600; color: #1e293b; margin: 0 0 0.5rem 0;">Reported</p>
+                    <p style="color: #64748b; margin: 0; font-size: 0.875rem;">{{ dispute.created_at|date:"M d, Y" }}</p>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8fafc; border-radius: 0.5rem;">
+                <p style="font-weight: 600; color: #1e293b; margin: 0 0 0.75rem 0;">Transaction Details</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <p style="color: #64748b; font-size: 0.875rem; margin: 0 0 0.25rem 0;">Listing</p>
+                        <a href="{% url 'listing_detail' dispute.transaction.listing.pk %}" style="color: #3b82f6; font-weight: 600; text-decoration: none;">{{ dispute.transaction.listing.title }}</a>
+                    </div>
+                    <div>
+                        <p style="color: #64748b; font-size: 0.875rem; margin: 0 0 0.25rem 0;">Offer Amount</p>
+                        <p style="font-weight: 600; color: #1e293b; margin: 0;">₹{{ dispute.transaction.amount }}</p>
+                    </div>
+                    <div>
+                        <p style="color: #64748b; font-size: 0.875rem; margin: 0 0 0.25rem 0;">Buyer</p>
+                        <p style="font-weight: 600; color: #1e293b; margin: 0;">{{ dispute.transaction.buyer.username }}</p>
+                    </div>
+                    <div>
+                        <p style="color: #64748b; font-size: 0.875rem; margin: 0 0 0.25rem 0;">Seller</p>
+                        <p style="font-weight: 600; color: #1e293b; margin: 0;">{{ dispute.transaction.listing.seller.username }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <p style="font-weight: 600; color: #1e293b; margin: 0 0 0.75rem 0;">Reason for Dispute</p>
+                <div style="padding: 1rem; background-color: #f8fafc; border-radius: 0.5rem; border-left: 4px solid #ef4444;">
+                    <p style="color: #1e293b; margin: 0; white-space: pre-wrap; line-height: 1.6;">{{ dispute.reason }}</p>
+                </div>
+            </div>
+
+            {% if user.is_staff %}
+            <div style="padding: 1rem; background-color: #eff6ff; border-radius: 0.5rem; border-left: 4px solid #3b82f6;">
+                <p style="font-weight: 600; color: #1e40af; margin: 0 0 0.5rem 0;">Admin Actions</p>
+                <p style="color: #1e40af; font-size: 0.875rem; margin: 0;">Review this dispute and take appropriate action through the admin panel.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+            <a href="{% url 'my_disputes' %}" class="btn btn-secondary" style="background-color: #e5e7eb; color: #374151; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; text-align: center;">
+                Back to My Disputes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

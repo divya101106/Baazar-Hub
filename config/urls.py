@@ -21,16 +21,19 @@ from django.conf.urls.static import static
 from listings.views import home
 
 from django.contrib.auth import views as auth_views
-from users.views import register, user_profile
+from users.views import register, user_profile, custom_login, edit_profile
+from config.views import switch_to_original_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
-    path('login/', auth_views.LoginView.as_view(template_name='users/login.html'), name='login'),
+    path('login/', custom_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('switch-user/', switch_to_original_user, name='switch_user'),  # Manual switch back to original user
     path('register/', register, name='register'),
     path('profile/', user_profile, name='user_profile'),
     path('profile/<int:user_id>/', user_profile, name='user_profile_detail'),
+    path('profile/edit/', edit_profile, name='edit_profile'),
     path('listings/', include('listings.urls')),
     path('create-listing/', include('listings.urls')),  # Redirect to listings/create
     path('api/listings/', include('listings.urls')),
@@ -43,6 +46,8 @@ urlpatterns = [
     path('api/search/', include('search.urls')),
     path('api/ratings/', include('ratings.urls')),
     path('ratings/', include('ratings.urls')),
+    path('disputes/', include('disputes.urls')),
+    path('', include('notifications.urls')),
 ]
 
 # Serve media files in development

@@ -1,3 +1,73 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db.models import Q
+from .models import Dispute
+from .forms import DisputeForm
+from offers.models import Offer
 
-# Create your views here.
+@login_required
+def create_dispute(request, offer_id=None):
+    """Create a dispute for a transaction"""
+    # If offer_id is provided, pre-select it
+    initial_data = {}
+    if offer_id:
+        offer = get_object_or_404(Offer, id=offer_id)
+        # Verify user is involved in this transaction
+        if request.user != offer.buyer and request.user != offer.listing.seller:
+            messages.error(request, "You don't have permission to create a dispute for this transaction.")
+            return redirect('user_profile')
+        
+        # Check if offer is accepted
+        if offer.status != 'accepted':
+            messages.error(request, "You can only create disputes for accepted transactions.")
+            return redirect('user_profile')
+        
+        # Check if dispute already exists
+        existing_dispute = Dispute.objects.filter(transaction=offer, reporter=request.user).first()
+        if existing_dispute:
+            messages.info(request, "You have already submitted a dispute for this transaction.")
+            return redirect('dispute_detail', dispute_id=existing_dispute.id)
+        
+        initial_data['transaction'] = offer
+    
+    if request.method == 'POST':
+        form = DisputeForm(request.POST, user=request.user)
+        if form.is_valid():
+            dispute = form.save(commit=False)
+            dispute.reporter = request.user
+            
+            # Verify user is involved in the transaction
+            transaction = form.cleaned_data['transaction']
+            if request.user != transaction.buyer and request.user != transaction.listing.seller:
+                messages.error(request, "You don't have permission to create a dispute for this transaction.")
+                return redirect('user_profile')
+            
+            dispute.save()
+            messages.success(request, "Dispute submitted successfully. An admin will review it shortly.")
+            return redirect('dispute_detail', dispute_id=dispute.id)
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = DisputeForm(user=request.user, initial=initial_data)
+    
+    return render(request, 'disputes/create_dispute.html', {'form': form})
+
+@login_required
+def dispute_detail(request, dispute_id):
+    """View dispute details"""
+    dispute = get_object_or_404(Dispute, id=dispute_id)
+    
+    # Only reporter or admin can view
+    if request.user != dispute.reporter and not request.user.is_staff:
+        messages.error(request, "You don't have permission to view this dispute.")
+        return redirect('user_profile')
+    
+    return render(request, 'disputes/dispute_detail.html', {'dispute': dispute})
+
+@login_required
+def my_disputes(request):
+    """View user's disputes"""
+    disputes = Dispute.objects.filter(reporter=request.user).select_related('transaction', 'transaction__listing', 'transaction__buyer', 'transaction__listing__seller').order_by('-created_at')
+    
+    return render(request, 'disputes/my_disputes.html', {'disputes': disputes})

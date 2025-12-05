@@ -69,6 +69,17 @@ def buy_now(request, listing_id):
     
     if created:
         messages.success(request, f"Offer created! You can now chat with the seller.")
+        # Create notification for seller
+        from notifications.utils import create_notification
+        create_notification(
+            user=listing.seller,
+            notification_type='offer_received',
+            title='New Offer Received',
+            message=f"{request.user.username} made an offer of ₹{listing.price} on your listing '{listing.title}'",
+            related_user=request.user,
+            related_offer=offer,
+            related_listing=listing
+        )
     else:
         messages.info(request, "You already have an offer for this listing.")
     

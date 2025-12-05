@@ -21,6 +21,7 @@ def moderate_action(request, pk, action):
         entry.save()
         entry.listing.status = 'approved'
         entry.listing.save()
+        # Trigger saved search alerts (signal will handle this)
     elif action == 'reject':
         entry.status = 'reviewed'
         entry.reviewed_at = timezone.now()
@@ -45,6 +46,8 @@ class ModerationQueueViewSet(viewsets.ModelViewSet):
         listing = entry.listing
         listing.status = 'approved'
         listing.save()
+        
+        # Trigger saved search alerts (signal will handle this)
         
         return Response({'status': 'approved'})
 

@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'ratings',
     'disputes',
     'cart',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -62,6 +63,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'config.middleware.PreserveUserSessionMiddleware',  # Preserve user session when accessing admin
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

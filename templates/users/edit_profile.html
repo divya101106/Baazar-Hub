@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto; padding: 2rem;">
+    <div class="card" style="padding: 2rem; border-radius: 1rem; box-shadow: var(--shadow-lg);">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+            <a href="{% url 'user_profile' %}" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                </svg>
+            </a>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: var(--primary-color); margin: 0;">Edit Profile</h2>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background-color: {% if message.tags == 'error' %}#fee2e2{% else %}#d1fae5{% endif %}; border: 1px solid {% if message.tags == 'error' %}#fca5a5{% else %}#86efac{% endif %}; color: {% if message.tags == 'error' %}#991b1b{% else %}#065f46{% endif %}; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <span style="font-size: 0.9rem;">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post" id="editProfileForm">
+            {% csrf_token %}
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="id_first_name" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">First Name</label>
+                {{ form.first_name }}
+                {% if form.first_name.errors %}
+                    <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                        {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="id_last_name" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Last Name</label>
+                {{ form.last_name }}
+                {% if form.last_name.errors %}
+                    <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                        {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="id_username" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Username <span style="color: #ef4444;">*</span></label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                        {% for error in form.username.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="id_email" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Email Address <span style="color: #ef4444;">*</span></label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                        {% for error in form.email.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="id_phone_number" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Phone Number <span style="color: #ef4444;">*</span></label>
+                {{ form.phone_number }}
+                <small style="display: block; color: #64748b; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.phone_number.help_text }}</small>
+                {% if form.phone_number.errors %}
+                    <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                        {% for error in form.phone_number.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="flex: 1; background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; border: none; cursor: pointer;">
+                    Save Changes
+                </button>
+                <a href="{% url 'user_profile' %}" class="btn btn-secondary" style="flex: 1; background-color: #e5e7eb; color: #374151; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Remove spaces and non-digit characters from phone number input
+    document.getElementById('id_phone_number').addEventListener('input', function(e) {
+        // Remove all non-digit characters
+        let value = e.target.value.replace(/\D/g, '');
+        // Limit to 10 digits
+        if (value.length > 10) {
+            value = value.substring(0, 10);
+        }
+        e.target.value = value;
+    });
+
+    // Real-time validation feedback
+    document.getElementById('id_phone_number').addEventListener('blur', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length !== 10 && value.length > 0) {
+            this.style.borderColor = '#ef4444';
+            this.style.backgroundColor = '#fef2f2';
+        } else {
+            this.style.borderColor = '#cbd5e1';
+            this.style.backgroundColor = 'white';
+        }
+    });
+</script>
+{% endblock %}
+

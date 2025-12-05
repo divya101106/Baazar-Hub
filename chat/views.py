@@ -64,13 +64,28 @@ def chat_with_user(request, user_id, offer_id=None):
     if request.method == 'POST':
         content = request.POST.get('content', '').strip()
         if content:
-            Message.objects.create(
+            message = Message.objects.create(
                 sender=request.user,
                 receiver=other_user,
                 offer=offer,
                 content=content
             )
             messages.success(request, "Message sent!")
+            
+            # Create notification for receiver
+            from notifications.utils import create_notification
+            notification_title = f"New message from {request.user.username}"
+            notification_message = content[:100] + "..." if len(content) > 100 else content
+            create_notification(
+                user=other_user,
+                notification_type='message_received',
+                title=notification_title,
+                message=notification_message,
+                related_user=request.user,
+                related_offer=offer,
+                related_listing=offer.listing if offer else None
+            )
+            
             return redirect('chat_with_user', user_id=user_id, offer_id=offer_id if offer else None)
         else:
             messages.error(request, "Message cannot be empty.")

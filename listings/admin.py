@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib import messages
+from django.utils import timezone
 from .models import Listing, ListingImage, Category
 from moderation.models import ModerationQueue
 
@@ -32,13 +33,17 @@ class ListingAdmin(admin.ModelAdmin):
     
     def approve_listings(self, request, queryset):
         """Admin action to approve selected listings"""
-        updated = queryset.update(status='approved')
-        # Update moderation queue
+        # Update each listing individually to trigger signals
         for listing in queryset:
+            listing.status = 'approved'
+            listing.save()
+            # Update moderation queue
             ModerationQueue.objects.filter(listing=listing, status='pending').update(
                 status='reviewed',
+                reviewed_at=timezone.now(),
                 reason='Approved by admin'
             )
+        updated = queryset.count()
         self.message_user(request, f'{updated} listing(s) approved successfully.', messages.SUCCESS)
     approve_listings.short_description = "Approve selected listings"
     

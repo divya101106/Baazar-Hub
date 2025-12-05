@@ -48,6 +48,17 @@ def create_offer(request):
             
             if created:
                 messages.success(request, f"Offer of ₹{amount} submitted! You can now chat with the seller.")
+                # Create notification for seller
+                from notifications.utils import create_notification
+                create_notification(
+                    user=listing.seller,
+                    notification_type='offer_received',
+                    title='New Offer Received',
+                    message=f"{request.user.username} made an offer of ₹{amount} on your listing '{listing.title}'",
+                    related_user=request.user,
+                    related_offer=offer,
+                    related_listing=listing
+                )
             else:
                 offer.amount = amount
                 offer.status = 'pending'
@@ -65,3 +76,71 @@ def create_offer(request):
             return redirect('listing_detail', pk=listing_id)
     
     return redirect('home')
+
+@login_required
+def accept_offer(request, offer_id):
+    """Accept an offer"""
+    offer = get_object_or_404(Offer, id=offer_id)
+    
+    # Only the seller can accept offers on their listings
+    if request.user != offer.listing.seller:
+        messages.error(request, "You don't have permission to accept this offer.")
+        return redirect('user_profile')
+    
+    # Only pending offers can be accepted
+    if offer.status != 'pending':
+        messages.error(request, f"This offer has already been {offer.status}.")
+        return redirect('user_profile')
+    
+    # Accept the offer
+    offer.status = 'accepted'
+    offer.save()
+    
+    # Create notification for buyer
+    from notifications.utils import create_notification
+    create_notification(
+        user=offer.buyer,
+        notification_type='offer_accepted',
+        title='Offer Accepted!',
+        message=f"Your offer of ₹{offer.amount} for '{offer.listing.title}' has been accepted by the seller.",
+        related_user=request.user,
+        related_offer=offer,
+        related_listing=offer.listing
+    )
+    
+    messages.success(request, f"Offer of ₹{offer.amount} has been accepted!")
+    return redirect('user_profile')
+
+@login_required
+def reject_offer(request, offer_id):
+    """Reject an offer"""
+    offer = get_object_or_404(Offer, id=offer_id)
+    
+    # Only the seller can reject offers on their listings
+    if request.user != offer.listing.seller:
+        messages.error(request, "You don't have permission to reject this offer.")
+        return redirect('user_profile')
+    
+    # Only pending offers can be rejected
+    if offer.status != 'pending':
+        messages.error(request, f"This offer has already been {offer.status}.")
+        return redirect('user_profile')
+    
+    # Reject the offer
+    offer.status = 'rejected'
+    offer.save()
+    
+    # Create notification for buyer
+    from notifications.utils import create_notification
+    create_notification(
+        user=offer.buyer,
+        notification_type='offer_rejected',
+        title='Offer Rejected',
+        message=f"Your offer of ₹{offer.amount} for '{offer.listing.title}' has been rejected by the seller.",
+        related_user=request.user,
+        related_offer=offer,
+        related_listing=offer.listing
+    )
+    
+    messages.info(request, f"Offer of ₹{offer.amount} has been rejected.")
+    return redirect('user_profile')
