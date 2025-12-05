@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto; padding: 2rem;">
+    <div class="card" style="padding: 2rem; border-radius: 1rem; box-shadow: var(--shadow-lg); text-align: center;">
+        <div style="width: 100px; height: 100px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        
+        <h2 style="font-size: 2rem; font-weight: 700; color: #10b981; margin-bottom: 0.5rem;">Payment Successful!</h2>
+        <p style="color: #64748b; font-size: 1rem; margin-bottom: 2rem;">Your payment has been processed successfully.</p>
+
+        <!-- Payment Details -->
+        <div style="background-color: #f8fafc; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem; text-align: left; border: 1px solid #e5e7eb;">
+            <h3 style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Payment Details</h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: #64748b; font-size: 0.9rem;">Transaction ID:</span>
+                <span style="color: #1e293b; font-weight: 600; font-size: 0.9rem;">{{ payment.transaction_id }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: #64748b; font-size: 0.9rem;">Amount Paid:</span>
+                <span style="color: #10b981; font-weight: 700; font-size: 1.1rem;">₹{{ payment.amount }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: #64748b; font-size: 0.9rem;">Item:</span>
+                <a href="{% url 'listing_detail' offer.listing.pk %}" style="color: #3b82f6; font-weight: 600; text-decoration: none; font-size: 0.9rem;">{{ offer.listing.title }}</a>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b; font-size: 0.9rem;">Payment Date:</span>
+                <span style="color: #1e293b; font-size: 0.9rem;">{{ payment.completed_at|date:"M d, Y g:i A" }}</span>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem; text-align: left;">
+            <p style="margin: 0; color: #1e40af; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">✅ Item Booked Successfully!</p>
+            <p style="margin: 0; color: #1e40af; font-size: 0.875rem;">
+                You can now:
+                <br>• Rate the seller after receiving the item
+                <br>• Report a dispute if there are any issues
+                <br>• Continue chatting with the seller
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="{% url 'chat_with_user' offer.listing.seller.id offer.id %}" class="btn btn-primary" style="background-color: #3b82f6; color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem;">
+                💬 Continue Chat
+            </a>
+            <a href="{% url 'user_profile' %}" class="btn btn-secondary" style="background-color: #e5e7eb; color: #374151; padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600;">
+                Back to Profile
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

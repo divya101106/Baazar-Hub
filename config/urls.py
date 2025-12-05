@@ -47,6 +47,7 @@ urlpatterns = [
     path('api/ratings/', include('ratings.urls')),
     path('ratings/', include('ratings.urls')),
     path('disputes/', include('disputes.urls')),
+    path('payments/', include('payments.urls')),
     path('', include('notifications.urls')),
 ]
 

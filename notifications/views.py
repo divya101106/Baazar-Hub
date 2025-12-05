@@ -8,7 +8,8 @@ from .models import Notification
 @require_http_methods(["GET"])
 def get_notifications(request):
     """API endpoint to fetch user notifications"""
-    notifications = Notification.objects.filter(user=request.user, is_read=False).order_by('-created_at')[:10]
+    # Get both read and unread notifications (latest 10)
+    notifications = Notification.objects.filter(user=request.user).select_related('related_user', 'related_offer', 'related_listing').order_by('-created_at')[:10]
     
     notifications_data = []
     for notification in notifications:
@@ -18,6 +19,7 @@ def get_notifications(request):
                 'title': notification.title,
                 'message': notification.message,
                 'time_ago': notification.time_ago,
+                'is_read': notification.is_read,
                 'related_user': notification.related_user.username if notification.related_user else None,
                 'url': notification.get_absolute_url(),
             })
@@ -47,3 +49,10 @@ def mark_all_read(request):
     """Mark all notifications as read"""
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     return JsonResponse({'success': True})
+
+@login_required
+@require_http_methods(["GET"])
+def unread_notifications_count(request):
+    """Get count of unread notifications"""
+    count = Notification.objects.filter(user=request.user, is_read=False).count()
+    return JsonResponse({'unread_count': count})

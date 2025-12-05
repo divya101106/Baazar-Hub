@@ -13,10 +13,24 @@
                 </p>
                 <p style="font-size: 0.9rem; margin: 0;">
                     Status: 
-                    {% if offer.status == 'accepted' %}<span style="color: #10b981; font-weight: 600;">✓ Accepted</span>
+                    {% if offer.status == 'accepted' %}
+                        {% if offer.payment and offer.payment.status == 'completed' %}
+                            <span style="color: #10b981; font-weight: 600;">✓ Payment Completed</span>
+                        {% else %}
+                            <span style="color: #f59e0b; font-weight: 600;">⏳ Payment Pending</span>
+                        {% endif %}
                     {% elif offer.status == 'rejected' %}<span style="color: #ef4444; font-weight: 600;">✗ Rejected</span>
                     {% else %}<span style="color: #f59e0b; font-weight: 600;">⏳ Pending</span>{% endif %}
                 </p>
+                {% if offer.status == 'accepted' and user == offer.buyer %}
+                    {% if not offer.payment or offer.payment.status != 'completed' %}
+                    <div style="margin-top: 1rem;">
+                        <a href="{% url 'payment_page' offer.id %}" class="btn btn-primary" style="background-color: #10b981; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600; font-size: 0.875rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                            💳 Pay Now
+                        </a>
+                    </div>
+                    {% endif %}
+                {% endif %}
                 {% endif %}
             </div>
             {% if offer and user == offer.listing.seller and offer.status == 'pending' %}

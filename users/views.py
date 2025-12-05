@@ -121,6 +121,9 @@ def user_profile(request, user_id=None):
     from .models import UserProfile
     UserProfile.objects.get_or_create(user=profile_user)
     
+    # Determine if this is the user's own profile
+    is_own_profile = request.user == profile_user if request.user.is_authenticated else False
+    
     # Get user's listings (as seller)
     listings = Listing.objects.filter(seller=profile_user).select_related('category').prefetch_related('images').order_by('-created_at')
     
@@ -135,6 +138,12 @@ def user_profile(request, user_id=None):
     
     # Get ratings given
     ratings_given = Rating.objects.filter(rater=profile_user).select_related('rated_user', 'transaction').order_by('-created_at')
+    
+    # Get disputes (only for own profile)
+    disputes = []
+    if is_own_profile:
+        from disputes.models import Dispute
+        disputes = Dispute.objects.filter(reporter=profile_user).select_related('transaction', 'transaction__listing', 'transaction__buyer', 'transaction__listing__seller').order_by('-created_at')[:5]
     
     # Calculate average rating
     if ratings_received.exists():
@@ -160,8 +169,9 @@ def user_profile(request, user_id=None):
         'offers_received': offers_received[:5],  # Show first 5 offers received
         'ratings_received': ratings_received[:5],  # Show first 5 ratings
         'ratings_given': ratings_given[:5],  # Show first 5 ratings given
+        'disputes': disputes,  # Show first 5 disputes
         'stats': stats,
-        'is_own_profile': request.user == profile_user if request.user.is_authenticated else False,
+        'is_own_profile': is_own_profile,
     }
     
     return render(request, 'users/profile.html', context)

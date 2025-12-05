@@ -20,9 +20,10 @@
             {% endfor %}
         {% endif %}
 
-        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
-            <p style="margin: 0; color: #92400e; font-size: 0.9rem;">
-                <strong>Note:</strong> Disputes should be reported for issues with completed transactions. Please provide detailed information about the problem.
+        <div style="background-color: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+            <p style="margin: 0; color: #1e40af; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">ℹ️ Important Notice</p>
+            <p style="margin: 0; color: #1e40af; font-size: 0.875rem;">
+                You can only raise a dispute for your <strong>latest purchased item</strong>. If you need to dispute an older transaction, please contact support.
             </p>
         </div>
 
@@ -30,14 +31,14 @@
             {% csrf_token %}
             
             <div class="form-group" style="margin-bottom: 1.5rem;">
-                <label for="id_transaction" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Transaction <span style="color: #ef4444;">*</span></label>
+                <label for="id_transaction" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">Latest Purchase <span style="color: #ef4444;">*</span></label>
                 {{ form.transaction }}
                 {% if form.transaction.errors %}
                     <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
                         {% for error in form.transaction.errors %}{{ error }}{% endfor %}
                     </div>
                 {% endif %}
-                <small style="display: block; color: #64748b; font-size: 0.875rem; margin-top: 0.25rem;">Select the transaction you want to dispute</small>
+                <small style="display: block; color: #64748b; font-size: 0.875rem; margin-top: 0.25rem;">Your latest purchased item (only one dispute allowed per latest purchase)</small>
             </div>
 
             <div class="form-group" style="margin-bottom: 1.5rem;">

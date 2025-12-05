@@ -49,13 +49,25 @@ class ListingAdmin(admin.ModelAdmin):
     
     def reject_listings(self, request, queryset):
         """Admin action to reject selected listings"""
-        updated = queryset.update(status='rejected')
-        # Update moderation queue
+        from notifications.utils import create_notification
+        # Update each listing individually to trigger signals (ensures cleanup in signals)
         for listing in queryset:
+            listing.status = 'rejected'
+            listing.save()  # This triggers pre_save and post_save signals (ensures cleanup)
+            # Update moderation queue
             ModerationQueue.objects.filter(listing=listing, status='pending').update(
                 status='reviewed',
                 reason='Rejected by admin'
             )
+            # Create notification for seller
+            create_notification(
+                user=listing.seller,
+                notification_type='offer_rejected',  # Reusing type
+                title='Listing Rejected',
+                message=f"Your listing '{listing.title}' has been rejected. Please review the guidelines and create a new listing.",
+                related_listing=listing
+            )
+        updated = queryset.count()
         self.message_user(request, f'{updated} listing(s) rejected.', messages.WARNING)
     reject_listings.short_description = "Reject selected listings"
 

@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 2rem auto; padding: 2rem;">
+    <div class="card" style="padding: 2rem; border-radius: 1rem; box-shadow: var(--shadow-lg);">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 1rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+            </div>
+            <h2 style="font-size: 1.75rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem;">Complete Payment</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Pay for your accepted offer</p>
+        </div>
+
+        <!-- Order Summary -->
+        <div style="background-color: #f8fafc; padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 2rem; border: 1px solid #e5e7eb;">
+            <h3 style="font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Order Summary</h3>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: #64748b; font-size: 0.9rem;">Item:</span>
+                <a href="{% url 'listing_detail' offer.listing.pk %}" style="color: #3b82f6; font-weight: 600; text-decoration: none; font-size: 0.9rem;">{{ offer.listing.title }}</a>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="color: #64748b; font-size: 0.9rem;">Seller:</span>
+                <span style="color: #1e293b; font-weight: 600; font-size: 0.9rem;">{{ offer.listing.seller.username }}</span>
+            </div>
+            <div style="border-top: 1px solid #e5e7eb; padding-top: 0.75rem; margin-top: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 700; color: #1e293b; font-size: 1.1rem;">Total Amount:</span>
+                    <span style="font-weight: 700; color: #10b981; font-size: 1.5rem;">₹{{ offer.amount }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Info Box -->
+        <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 0.5rem; margin-bottom: 2rem;">
+            <p style="margin: 0; color: #92400e; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem;">💡 Dummy Payment System</p>
+            <p style="margin: 0; color: #92400e; font-size: 0.875rem;">
+                Use these credentials to complete payment:<br>
+                <strong>UPI ID:</strong> {{ dummy_upi_id }}<br>
+                <strong>PIN:</strong> 1234
+            </p>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div style="background-color: {% if message.tags == 'error' %}#fee2e2{% else %}#d1fae5{% endif %}; border: 1px solid {% if message.tags == 'error' %}#fca5a5{% else %}#86efac{% endif %}; color: {% if message.tags == 'error' %}#991b1b{% else %}#065f46{% endif %}; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1.5rem;">
+                    <span style="font-size: 0.9rem;">{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="id_upi_id" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">UPI ID <span style="color: #ef4444;">*</span></label>
+                {{ form.upi_id }}
+                {% if form.upi_id.errors %}
+                    <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                        {% for error in form.upi_id.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group" style="margin-bottom: 2rem;">
+                <label for="id_upi_pin" class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151;">UPI PIN <span style="color: #ef4444;">*</span></label>
+                {{ form.upi_pin }}
+                {% if form.upi_pin.errors %}
+                    <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                        {% for error in form.upi_pin.errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+                <small style="display: block; color: #64748b; font-size: 0.875rem; margin-top: 0.25rem;">{{ form.upi_pin.help_text }}</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; border: none; cursor: pointer; font-size: 1rem;">
+                Pay ₹{{ offer.amount }}
+            </button>
+        </form>
+
+        <div style="text-align: center; margin-top: 1.5rem;">
+            <a href="{% url 'user_profile' %}" style="color: #64748b; text-decoration: none; font-size: 0.875rem;">Cancel Payment</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

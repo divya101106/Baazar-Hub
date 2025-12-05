@@ -50,7 +50,7 @@ def remove_from_cart(request, cart_id):
 
 @login_required
 def buy_now(request, listing_id):
-    """Buy now - create offer and redirect to chat"""
+    """Buy now - create offer, auto-accept, and redirect to payment"""
     listing = get_object_or_404(Listing, id=listing_id, status='approved')
     
     # Don't allow buying own listings
@@ -59,30 +59,50 @@ def buy_now(request, listing_id):
         return redirect('listing_detail', pk=listing_id)
     
     from offers.models import Offer
+    from payments.models import Payment
     
-    # Create offer with listing price
+    # Create or get offer with listing price and auto-accept it
     offer, created = Offer.objects.get_or_create(
         buyer=request.user,
         listing=listing,
-        defaults={'amount': listing.price, 'status': 'pending'}
+        defaults={'amount': listing.price, 'status': 'accepted'}
     )
     
-    if created:
-        messages.success(request, f"Offer created! You can now chat with the seller.")
+    # If offer already exists but not accepted, accept it
+    if not created and offer.status != 'accepted':
+        offer.status = 'accepted'
+        offer.save()
+    
+    # Check if payment already exists
+    try:
+        payment = Payment.objects.get(offer=offer)
+        if payment.status == 'completed':
+            messages.info(request, "Payment for this item has already been completed.")
+            return redirect('payment_success', offer_id=offer.id)
+        else:
+            # Payment exists but not completed, redirect to payment page
+            return redirect('payment_page', offer_id=offer.id)
+    except Payment.DoesNotExist:
+        # No payment exists, create one and redirect to payment page
+        Payment.objects.create(
+            offer=offer,
+            buyer=request.user,
+            amount=offer.amount,
+            status='pending'
+        )
+        
         # Create notification for seller
         from notifications.utils import create_notification
         create_notification(
             user=listing.seller,
-            notification_type='offer_received',
-            title='New Offer Received',
-            message=f"{request.user.username} made an offer of ₹{listing.price} on your listing '{listing.title}'",
+            notification_type='offer_accepted',
+            title='Buy Now - Payment Pending',
+            message=f"{request.user.username} wants to buy '{listing.title}' for ₹{listing.price}. Waiting for payment.",
             related_user=request.user,
             related_offer=offer,
             related_listing=listing
         )
-    else:
-        messages.info(request, "You already have an offer for this listing.")
-    
-    # Redirect to chat with seller
-    return redirect('chat_with_user', user_id=listing.seller.id, offer_id=offer.id)
+        
+        messages.success(request, f"Proceed to payment for {listing.title}")
+        return redirect('payment_page', offer_id=offer.id)
 

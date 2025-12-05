@@ -38,10 +38,20 @@ class RatingViewSet(viewsets.ModelViewSet):
             # Verify transaction is accepted
             if transaction.status != 'accepted':
                 raise permissions.PermissionDenied("You can only rate users after an accepted transaction.")
+            
+            # Verify payment is completed
+            try:
+                if transaction.payment.status != 'completed':
+                    raise permissions.PermissionDenied("You can only rate users after payment is completed.")
+            except:
+                raise permissions.PermissionDenied("Payment not found. Please complete payment first.")
         else:
-            # If no transaction, check if users have any accepted offers together
+            # If no transaction, check if users have any accepted offers with completed payments
+            from payments.models import Payment
+            completed_payment_offers = Payment.objects.filter(status='completed').values_list('offer_id', flat=True)
             has_transaction = Offer.objects.filter(
                 Q(status='accepted') &
+                Q(id__in=completed_payment_offers) &
                 (Q(buyer=self.request.user, listing__seller=rated_user) |
                  Q(buyer=rated_user, listing__seller=self.request.user))
             ).exists()
@@ -72,10 +82,23 @@ def create_rating(request, user_id, offer_id=None):
         if offer.status != 'accepted':
             messages.error(request, "You can only rate after an accepted transaction.")
             return redirect('home')
+        
+        # Check if payment is completed
+        try:
+            payment = offer.payment
+            if payment.status != 'completed':
+                messages.error(request, "You can only rate after payment is completed.")
+                return redirect('user_profile')
+        except:
+            messages.error(request, "Payment not found. Please complete payment first.")
+            return redirect('user_profile')
     else:
-        # Check if users have any accepted offers together
+        # Check if users have any accepted offers with completed payments
+        from payments.models import Payment
+        completed_payment_offers = Payment.objects.filter(status='completed').values_list('offer_id', flat=True)
         offer = Offer.objects.filter(
             Q(status='accepted') &
+            Q(id__in=completed_payment_offers) &
             (Q(buyer=request.user, listing__seller=rated_user) |
              Q(buyer=rated_user, listing__seller=request.user))
         ).first()

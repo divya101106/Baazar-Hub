@@ -33,13 +33,23 @@ class DisputeForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         if self.user:
-            # Only show transactions where user is involved and offer is accepted
+            # Only show the latest purchased item (most recent completed payment)
             from django.db.models import Q
-            self.fields['transaction'].queryset = Offer.objects.filter(
-                status='accepted'
-            ).filter(
-                Q(buyer=self.user) | Q(listing__seller=self.user)
-            ).select_related('listing', 'buyer', 'listing__seller')
+            from payments.models import Payment
+            # Get the most recent completed payment for this user as buyer
+            latest_payment = Payment.objects.filter(
+                buyer=self.user,
+                status='completed'
+            ).select_related('offer', 'offer__listing').order_by('-completed_at').first()
+            
+            if latest_payment:
+                # Show only the latest purchased item
+                self.fields['transaction'].queryset = Offer.objects.filter(
+                    id=latest_payment.offer.id
+                ).select_related('listing', 'buyer', 'listing__seller')
+            else:
+                # No completed payments, show empty queryset
+                self.fields['transaction'].queryset = Offer.objects.none()
     
     def clean_reason(self):
         reason = self.cleaned_data.get('reason', '').strip()

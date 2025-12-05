@@ -32,16 +32,18 @@ class PreserveUserSessionMiddleware:
                         # Logout current admin user and login as original user
                         logout(request)
                         login(request, original_user, backend='django.contrib.auth.backends.ModelBackend')
-                        # Clear the preserved user ID
+                        # Clear the preserved user ID and persist the change
                         if '_original_user_id' in request.session:
                             del request.session['_original_user_id']
+                            request.session.save()
                         # Reload the user object
                         from django.contrib.auth import get_user
                         request.user = get_user(request)
                 except User.DoesNotExist:
-                    # Original user doesn't exist, clear the session variable
+                    # Original user doesn't exist, clear the session variable and persist
                     if '_original_user_id' in request.session:
                         del request.session['_original_user_id']
+                        request.session.save()
         
         # If we're on admin path and user is authenticated but not superuser
         # Store the original user ID before they log in as admin
