@@ -25,8 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-yk&pm*cfwk6*ebxatsxx^8s)a4n2+!uu_fq9_1r5*yrqu_o#@3')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Read from environment variable, default to False for safety
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+# Read from environment variable, default to True for local development
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Read ALLOWED_HOSTS from environment variable, fallback to wildcard for development
 ALLOWED_HOSTS_STR = os.environ.get('ALLOWED_HOSTS', '*')
@@ -115,7 +115,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    #'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -204,7 +204,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production static file collection
 

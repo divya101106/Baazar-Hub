@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+import os
 from listings.views import home
 
 from django.contrib.auth import views as auth_views
@@ -51,6 +53,13 @@ urlpatterns = [
     path('', include('notifications.urls')),
 ]
 
-# Serve media files in development
+# Serve static and media files in development
+# Always serve static files when DEBUG is True
 if settings.DEBUG:
+    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # In production, WhiteNoise handles static files
+    # For media files, you may need cloud storage (S3, Cloudinary) for production
+    # For now, serve media files directly (not recommended for high traffic)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
