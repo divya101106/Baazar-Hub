@@ -2,5 +2,6 @@
 Custom admin site configuration (optional - using default admin with middleware).
 """
 # This file is kept for potential future customizations
-# The session preservation is handled by PreserveUserSessionMiddleware
+# Session isolation is handled by IsolatedSessionMiddleware
+# Admin and main site use separate session cookies for complete isolation
 

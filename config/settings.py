@@ -116,11 +116,10 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'config.middleware.IsolatedSessionMiddleware',  # Isolated sessions for admin and main site (extends SessionMiddleware)
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'config.middleware.PreserveUserSessionMiddleware',  # Preserve user session when accessing admin
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
