@@ -1,0 +1,670 @@
+# 🛒 BAAZAR-HUB
+
+<<<<<<< HEAD
+A modern, secure, and feature-rich classifieds marketplace built with Django.  
+Buy, sell, chat, negotiate, and manage transactions effortlessly.
+
+![Django](https://img.shields.io/badge/Django-5.2.8-092E20?style=flat&logo=django&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat&logo=python&logoColor=white)
+
+---
+
+## 🔗 Demo Link
+🚀 **Live Demo:** *[BAAZAR-HUB*](https://baazar-hub-1.onrender.com)  
+=======
+A modern, secure, and feature-rich classifieds marketplace platform built with Django. BAAZAR-HUB enables users to buy and sell items locally with built-in moderation, real-time chat, offer management, and dispute resolution.
+
+![Django](https://img.shields.io/badge/Django-5.2.8-092E20?style=flat&logo=django&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=flat&logo=python&logoColor=white)
+![DRF](https://img.shields.io/badge/DRF-3.14+-red?style=flat&logo=django&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat)
+>>>>>>> cb283a2 (changes)
+
+---
+
+## 📋 Table of Contents
+<<<<<<< HEAD
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [API Documentation](#api-documentation)
+- [Project Status](#project-status)
+=======
+
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Usage](#-usage)
+- [Project Structure](#-project-structure)
+- [Deployment](#-deployment)
+- [API Documentation](#-api-documentation)
+- [Contributing](#-contributing)
+- [License](#-license)
+>>>>>>> cb283a2 (changes)
+
+---
+
+## ✨ Features
+
+<<<<<<< HEAD
+### 🏪 Marketplace
+- Create, edit, delete listings  
+- Upload up to 5 images  
+- Category-based browsing and filters  
+- Search by keywords, categories, and price range  
+- Saved searches + automatic alerts  
+
+### 💬 Communication
+- Real-time chat between buyers & sellers  
+- Offer-based conversations  
+- Timestamped message history  
+
+### 💸 Offers & Transactions
+- Make/Accept/Reject offers  
+- Offer history  
+- “Buy Now” + shopping cart system  
+- Dummy UPI-based payment simulation  
+
+### ⭐ Ratings & Profiles
+- Rate users after completed transactions  
+- 5-star rating with comments  
+- Profile stats, listings, offers, and disputes view  
+
+### 🛡 Moderation & Safety
+- Auto spam/image/text detection  
+- Admin approval queue  
+- Manual moderation dashboard  
+- User flagging  
+
+### ⚖ Dispute Management
+- File disputes  
+- Admin review  
+- Resolution tracking  
+
+### 🔔 Notifications
+- Real-time notifications for offers, messages, approvals  
+- Badge & preview dropdown  
+- Mark as read  
+
+---
+
+## 🛠 Tech Stack
+
+### Backend
+- Django 5.2.8  
+- Django REST Framework (DRF)  
+- SQLite / PostgreSQL  
+- Pillow for images  
+
+### Frontend
+- HTML, CSS, JavaScript  
+- Django Templates  
+
+### Architecture
+- Django MTV pattern  
+- REST API  
+- Service Layer Architecture  
+=======
+### 🏪 Core Marketplace Features
+
+- **Listing Management**
+  - Create, edit, and manage product listings
+  - Multiple image uploads (up to 5 images per listing)
+  - Category-based organization
+  - Price and description management
+  - Listing status workflow (Pending → Approved/Rejected)
+
+- **Advanced Search & Discovery**
+  - Keyword-based search
+  - Category filtering
+  - Price range filtering
+  - Saved searches with automatic alerts
+  - Category browsing
+
+- **Offer System**
+  - Make offers on listings
+  - Accept/Reject offers
+  - Offer history tracking
+  - Privacy restrictions (users only see their own offers)
+
+- **Shopping Cart & Buy Now**
+  - Add/remove items from cart
+  - Cart persistence across sessions
+  - Instant "Buy Now" feature
+  - Direct checkout flow
+
+### 💬 Communication Features
+
+- **Real-time Chat**
+  - Direct messaging between buyers and sellers
+  - Offer-linked conversations
+  - Message history and timestamps
+  - Secure message storage
+
+- **Notification System**
+  - Real-time notifications for offers, messages, and listings
+  - Notification badge on profile icon
+  - Hover preview of notifications
+  - Mark as read functionality
+
+### ⭐ Rating & Reputation
+
+- **Transaction-based Ratings**
+  - 5-star rating system with optional comments
+  - Only users involved in completed transactions can rate
+  - Average rating calculation
+  - Rating history display
+
+### 🛡️ Safety & Moderation
+
+- **Automatic Moderation**
+  - Spam detection algorithms
+  - Image safety validation
+  - Text heuristics
+  - Automatic flagging
+
+- **Manual Moderation**
+  - Admin review queue
+  - Approve/Reject functionality
+  - Moderation dashboard
+  - User flagging system
+
+### ⚖️ Dispute Resolution
+
+- **Dispute Management**
+  - Submit disputes for transactions
+  - Admin review and resolution
+  - Dispute history tracking
+  - Privacy restrictions
+
+### 💳 Payment Integration
+
+- **Dummy Payment Gateway**
+  - UPI payment simulation
+  - Transaction tracking
+  - Payment status management
+  - Test credentials: `pay@paytm` / `1234`
+
+### 👤 User Management
+
+- **User Profiles**
+  - Edit profile functionality
+  - View listings, offers, ratings, and disputes
+  - Profile statistics
+  - User reputation display
+
+- **Authentication**
+  - Secure login/logout
+  - User registration
+  - Session management
+  - Admin session preservation
+
+---
+
+## 🛠️ Tech Stack
+
+### Backend
+- **Framework**: Django 5.2.8
+- **API**: Django REST Framework (DRF) 3.14+
+- **Database**: SQLite (Development) / PostgreSQL (Production)
+- **Authentication**: Django Built-in Authentication System
+- **Image Processing**: Pillow 10.0+
+
+### Frontend
+- **HTML5/CSS3**: Modern, responsive design
+- **JavaScript**: Vanilla JS for dynamic interactions
+- **Templates**: Django Template Engine
+
+### Architecture
+- **Pattern**: Django MTV (Model-Template-View) + Service Layer
+- **API Design**: RESTful architecture
+- **Middleware**: Custom session preservation middleware
+
+### Deployment
+- **Static Files**: WhiteNoise
+- **Database URL Parsing**: dj-database-url
+- **Production Ready**: Environment variable configuration
+>>>>>>> cb283a2 (changes)
+
+---
+
+## 🚀 Installation
+
+<<<<<<< HEAD
+### 1. Clone Repo
+```bash
+git clone <(https://github.com/divya101106/Baazar-Hub.git)>
+cd BAAZAR-HUB
+```
+### 2. python -m venv venv
+```bash
+venv\Scripts\activate   # Windows
+source venv/bin/activate  # Linux/Mac
+```
+### 3. Install dependencies 
+```bash
+pip install -r requirements.txt
+```
+### 4. Setup Database
+=======
+### Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package manager)
+- Git (optional, for cloning)
+
+### Step 1: Clone the Repository
+
+```bash
+git clone <repository-url>
+cd BAAZARHUB
+```
+
+Or download and extract the project files.
+
+### Step 2: Create Virtual Environment
+
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### Step 3: Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Run Migrations
+
+>>>>>>> cb283a2 (changes)
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+<<<<<<< HEAD
+### 5. Run Server
+=======
+
+### Step 5: Create Superuser (Admin)
+
+```bash
+python manage.py createsuperuser
+```
+
+Follow the prompts to create an admin account.
+
+### Step 6: Run Development Server
+
+>>>>>>> cb283a2 (changes)
+```bash
+python manage.py runserver
+```
+
+<<<<<<< HEAD
+## 📖 Usage
+
+### **For Users**
+- Register/Login  
+- Browse/search listings  
+- Create listings  
+- Make offers, chat with sellers  
+- Add to cart or Buy Now  
+- Make dummy UPI payment  
+- Rate seller after completion  
+
+### **For Admins**
+- `/admin/` dashboard  
+- Review & approve listings  
+- Manage disputes, users, and moderation queue  
+=======
+The application will be available at `http://127.0.0.1:8000/`
+
+---
+
+## ⚙️ Configuration
+
+### Environment Variables (Development)
+
+For local development, the project uses default settings. For production, configure these environment variables:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DJANGO_SECRET_KEY` | Django secret key (REQUIRED) | Generated key |
+| `DEBUG` | Debug mode (REQUIRED) | `False` |
+| `ALLOWED_HOSTS` | Allowed hostnames (REQUIRED) | `yourdomain.com` |
+| `CSRF_TRUSTED_ORIGINS` | Trusted origins (Recommended) | `https://yourdomain.com` |
+| `DATABASE_URL` | Database connection string | `postgresql://...` |
+| `TIME_ZONE` | Timezone (Optional) | `UTC` |
+
+See [ENVIRONMENT_VARIABLES_TO_ADD.md](ENVIRONMENT_VARIABLES_TO_ADD.md) for detailed configuration instructions.
+
+### Settings File
+
+The main configuration file is located at `config/settings.py`. Key settings:
+
+- **Database**: Configured to use SQLite for development, PostgreSQL for production
+- **Static Files**: WhiteNoise configured for production static file serving
+- **Media Files**: User-uploaded files stored in `media/` directory
+- **Authentication**: Django's built-in authentication system
+
+---
+
+## 📖 Usage
+
+### For Regular Users
+
+1. **Register/Login**: Create an account or log in
+2. **Browse Listings**: Search or browse by category
+3. **Create Listings**: Click "Create Listing" to sell items
+4. **Make Offers**: Click "Make Offer" on any listing
+5. **Chat**: Communicate with buyers/sellers through the chat system
+6. **Complete Transactions**: Use "Buy Now" or accept offers, then proceed to payment
+7. **Rate Transactions**: Rate sellers after completed transactions
+8. **Manage Profile**: Edit profile, view listings, offers, and disputes
+
+### For Administrators
+
+1. **Access Admin Panel**: Navigate to `/admin/` and log in
+2. **Moderate Listings**: Approve or reject pending listings
+3. **Manage Users**: View and manage user accounts
+4. **Review Disputes**: Handle dispute resolution
+5. **Monitor System**: View moderation queue and system statistics
+
+### Payment Testing
+
+Use the dummy payment gateway:
+- **UPI ID**: `pay@paytm`
+- **UPI PIN**: `1234`
+>>>>>>> cb283a2 (changes)
+
+---
+
+## 📁 Project Structure
+
+<<<<<<< HEAD
+
+
+## 📁 Project Structure
+```markdown
+- BAAZAR-HUB/
+  - config/ — Core settings & project config  
+  - users/ — Auth, profiles, ratings  
+  - listings/ — Listings & images  
+  - offers/ — Offer system + API  
+  - chat/ — Messaging system  
+  - cart/ — Shopping cart  
+  - payments/ — Dummy payment gateway  
+  - ratings/ — Rating system  
+  - disputes/ — Dispute resolution  
+  - moderation/ — Moderation tools  
+  - search/ — Search + saved alerts  
+  - notifications/ — Notification system  
+  - services/ — Business logic layer  
+  - templates/ — Global templates  
+  - static/ — CSS, JS  
+  - media/ — User uploaded files 
+```
+
+=======
+```
+BAAZARHUB/
+│
+├── config/                 # Main project configuration
+│   ├── settings.py         # Django settings
+│   ├── urls.py            # Main URL routing
+│   ├── middleware.py      # Custom middleware
+│   └── wsgi.py            # WSGI configuration
+│
+├── users/                  # User management app
+│   ├── models.py          # UserProfile model
+│   ├── views.py           # User views
+│   ├── forms.py           # User forms
+│   └── templates/         # User templates
+│
+├── listings/              # Listing management app
+│   ├── models.py          # Listing, ListingImage models
+│   ├── views.py           # Listing views
+│   ├── forms.py           # Listing forms
+│   └── templates/         # Listing templates
+│
+├── offers/                # Offer management app
+│   ├── models.py          # Offer model
+│   ├── views.py           # Offer views
+│   └── serializers.py     # DRF serializers
+│
+├── chat/                  # Messaging app
+│   ├── models.py          # Message model
+│   ├── views.py           # Chat views
+│   └── templates/         # Chat templates
+│
+├── cart/                  # Shopping cart app
+│   ├── models.py          # Cart model
+│   └── views.py           # Cart views
+│
+├── payments/              # Payment processing app
+│   ├── models.py          # Payment model
+│   ├── forms.py           # Payment forms
+│   └── views.py           # Payment views
+│
+├── ratings/               # Rating system app
+│   ├── models.py          # Rating model
+│   └── views.py           # Rating views
+│
+├── disputes/              # Dispute resolution app
+│   ├── models.py          # Dispute model
+│   ├── forms.py           # Dispute forms
+│   └── views.py           # Dispute views
+│
+├── moderation/            # Content moderation app
+│   ├── models.py          # ModerationQueue model
+│   └── views.py           # Moderation views
+│
+├── search/                # Search functionality app
+│   ├── models.py          # SavedSearch model
+│   ├── signals.py         # Saved search alerts
+│   └── views.py           # Search views
+│
+├── notifications/         # Notification system app
+│   ├── models.py          # Notification model
+│   ├── utils.py           # Notification utilities
+│   └── views.py           # Notification views
+│
+├── services/              # Business logic layer
+│   ├── listings_service.py
+│   ├── moderation_service.py
+│   └── offers_service.py
+│
+├── templates/             # Global templates
+│   ├── base.html          # Base template
+│   └── home.html          # Home page
+│
+├── static/                # Static files (CSS, JS)
+├── media/                 # User-uploaded files
+├── requirements.txt       # Python dependencies
+└── manage.py              # Django management script
+```
+
+---
+
+## 🌐 Deployment
+
+### Production Deployment Checklist
+
+1. **Set Environment Variables**
+   - `DJANGO_SECRET_KEY` (generate new key)
+   - `DEBUG=False`
+   - `ALLOWED_HOSTS` (your domain)
+   - `CSRF_TRUSTED_ORIGINS` (your domain with https://)
+   - `DATABASE_URL` (PostgreSQL connection string)
+
+2. **Database Setup**
+   - Use PostgreSQL in production (not SQLite)
+   - Run migrations: `python manage.py migrate`
+
+3. **Static Files**
+   - Collect static files: `python manage.py collectstatic --noinput`
+   - WhiteNoise will serve static files automatically
+
+4. **Security**
+   - Ensure `DEBUG=False` in production
+   - Use strong `SECRET_KEY`
+   - Configure `ALLOWED_HOSTS` properly
+   - Enable HTTPS
+
+### Platform-Specific Deployment
+
+#### Render.com
+- Add PostgreSQL database
+- Set environment variables in dashboard
+- Deploy from Git repository
+- See [ENVIRONMENT_VARIABLES_TO_ADD.md](ENVIRONMENT_VARIABLES_TO_ADD.md) for details
+
+#### Railway.app
+- Add PostgreSQL service
+- Configure environment variables
+- Deploy from Git repository
+
+#### Heroku
+- Add Heroku Postgres addon
+- Set config vars
+- Deploy using Git or CLI
+
+For detailed deployment instructions, see [DEPLOYMENT_ENV_VARIABLES.md](DEPLOYMENT_ENV_VARIABLES.md)
+>>>>>>> cb283a2 (changes)
+
+---
+
+## 📚 API Documentation
+
+<<<<<<< HEAD
+**Base URL:** `/api/`
+
+| Feature | Endpoint |
+|--------|----------|
+| Listings | `/api/listings/` |
+| Offers | `/api/offers/` |
+| Messages | `/api/messages/` |
+| Ratings | `/api/ratings/` |
+| Notifications | `/api/notifications/` |
+=======
+The project includes RESTful APIs built with Django REST Framework. API endpoints are available at `/api/`:
+
+- **Listings API**: `/api/listings/`
+- **Offers API**: `/api/offers/`
+- **Messages API**: `/api/messages/`
+- **Ratings API**: `/api/ratings/`
+
+API documentation can be accessed via DRF's browsable API interface when running the development server.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Development Guidelines
+
+- Follow PEP 8 style guidelines
+- Write docstrings for functions and classes
+- Add tests for new features
+- Update documentation as needed
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+>>>>>>> cb283a2 (changes)
+
+---
+
+## 🎯 Project Status
+
+<<<<<<< HEAD
+**Version:** 1.0.0  
+**Status:** ✔ Production Ready  
+
+### ✔ Completed
+- Listings  
+- Offers  
+- Chat  
+- Cart & Buy Now  
+- Ratings  
+- Notifications  
+- Moderation  
+- Disputes  
+- Payment Simulation  
+
+### 🚀 Future Plans
+- Real payment gateway  
+- Email alerts  
+- Analytics dashboard  
+- Mobile-app-ready API  
+- Image compression  
+- Rate limiting  
+=======
+**Current Version**: 1.0.0
+
+**Status**: ✅ Production Ready
+
+**PRD Alignment**: ~92% (Core features fully implemented)
+
+### Implemented Features
+- ✅ Listing Management
+- ✅ Offer System
+- ✅ Real-time Chat
+- ✅ Rating System
+- ✅ Shopping Cart & Buy Now
+- ✅ Search & Saved Search Alerts
+- ✅ Moderation System
+- ✅ Dispute Resolution
+- ✅ Payment Integration (Dummy)
+- ✅ Notification System
+- ✅ User Profiles
+
+### Future Enhancements
+- [ ] Real payment gateway integration
+- [ ] Email notifications
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app API
+- [ ] Image compression optimization
+- [ ] Rate limiting
+- [ ] Pagination improvements
+
+---
+
+## 📞 Support
+
+For issues, questions, or contributions:
+- Open an issue on GitHub
+- Contact the development team
+- Check the documentation files in the repository
+
+---
+
+## 🙏 Acknowledgments
+
+- Django community for the excellent framework
+- Django REST Framework for API capabilities
+- All contributors and testers
+
+---
+
+**Built with ❤️ using Django**
+
+>>>>>>> cb283a2 (changes)

@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,18 +21,72 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yk&pm*cfwk6*ebxatsxx^8s)a4n2+!uu_fq9_1r5*yrqu_o#@3'
+# Read from environment variable, fallback to default for development only
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-yk&pm*cfwk6*ebxatsxx^8s)a4n2+!uu_fq9_1r5*yrqu_o#@3')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Read from environment variable, default to False for safety
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ["*"]
+# Read ALLOWED_HOSTS from environment variable, fallback to wildcard for development
+ALLOWED_HOSTS_STR = os.environ.get('ALLOWED_HOSTS', '*')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_STR.split(',')] if ALLOWED_HOSTS_STR and ALLOWED_HOSTS_STR != '*' else ['*']
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*",          # allow all HTTPS (Django 4.1+ supports wildcard)
-    "http://*",           # optional for local testing
-    "https://baazar-hub.onrender.com"
-]
+# Read CSRF_TRUSTED_ORIGINS from environment variable
+CSRF_TRUSTED_ORIGINS_STR = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = []
+
+if CSRF_TRUSTED_ORIGINS_STR:
+    # Use explicitly set origins
+    CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_TRUSTED_ORIGINS_STR.split(',') if origin.strip()]
+else:
+    # Auto-detect from ALLOWED_HOSTS for production
+    if ALLOWED_HOSTS and ALLOWED_HOSTS != ['*']:
+        # Add https:// and http:// versions of each allowed host
+        for host in ALLOWED_HOSTS:
+            if host and host != '*':
+                # Add both https and http for flexibility
+                CSRF_TRUSTED_ORIGINS.append(f"https://{host}")
+                CSRF_TRUSTED_ORIGINS.append(f"http://{host}")
+    else:
+        # Development fallback - allow localhost
+        CSRF_TRUSTED_ORIGINS = [
+            "http://localhost:8000",
+            "http://127.0.0.1:8000",
+            "http://localhost",
+            "http://127.0.0.1",
+        ]
+
+# Always add Render domains if detected (even if CSRF_TRUSTED_ORIGINS was set)
+# This ensures Render deployments work even if CSRF_TRUSTED_ORIGINS env var is missing
+render_domain = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if not render_domain:
+    # Try alternative Render environment variables
+    render_service = os.environ.get('RENDER_SERVICE_NAME')
+    if render_service:
+        # Render format: service-name.onrender.com
+        render_domain = f"{render_service}.onrender.com"
+
+if render_domain:
+    render_https = f"https://{render_domain}"
+    render_http = f"http://{render_domain}"
+    if render_https not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_https)
+    if render_http not in CSRF_TRUSTED_ORIGINS:
+        CSRF_TRUSTED_ORIGINS.append(render_http)
+
+# Also check if ALLOWED_HOSTS contains any .onrender.com domain and add it
+for host in ALLOWED_HOSTS:
+    if host and host != '*' and '.onrender.com' in host:
+        render_https = f"https://{host}"
+        render_http = f"http://{host}"
+        if render_https not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(render_https)
+        if render_http not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(render_http)
+
+# Remove duplicates while preserving order
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CSRF_TRUSTED_ORIGINS))
 
 
 # Application definition
@@ -60,6 +115,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    #'whitenoise.middleware.WhiteNoiseMiddleware',  # Serve static files in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -92,12 +148,39 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Use DATABASE_URL if provided (for PostgreSQL in production), otherwise use SQLite
+if 'DATABASE_URL' in os.environ:
+    # Production: Use PostgreSQL from DATABASE_URL
+    try:
+        import dj_database_url
+        DATABASES = {
+            'default': dj_database_url.parse(os.environ.get('DATABASE_URL'))
+        }
+    except ImportError:
+        # Fallback if dj-database-url is not installed
+        DATABASE_URL = os.environ.get('DATABASE_URL')
+        # Parse DATABASE_URL manually (basic parsing)
+        # Format: postgresql://user:password@host:port/dbname
+        from urllib.parse import urlparse
+        db_url = urlparse(DATABASE_URL)
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': db_url.path[1:],  # Remove leading '/'
+                'USER': db_url.username,
+                'PASSWORD': db_url.password,
+                'HOST': db_url.hostname,
+                'PORT': db_url.port or 5432,
+            }
+        }
+else:
+    # Development: Use SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
 
 # Password validation
@@ -111,7 +194,7 @@ AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.environ.get('TIME_ZONE', 'UTC')
 
 USE_I18N = True
 
@@ -123,6 +206,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # For production static file collection
+
+# WhiteNoise configuration for static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
