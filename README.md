@@ -10,7 +10,7 @@ Buy, sell, chat, negotiate, and manage transactions effortlessly.
 ---
 
 ## 🔗 Demo Link
-🚀 **Live Demo:** *[BAAZAR-HUB*](https://baazar-hub-1.onrender.com)  
+🚀 **Live Demo:** *[BAAZAR-HUB*]((https://baazar-hub-3.onrender.com))  
 
 A modern, secure, and feature-rich classifieds marketplace platform built with Django. BAAZAR-HUB enables users to buy and sell items locally with built-in moderation, real-time chat, offer management, and dispute resolution.
 
